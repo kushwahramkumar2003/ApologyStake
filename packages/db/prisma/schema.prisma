@@ -1,0 +1,35 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  wallet       String    @unique
+  createdAt    DateTime  @default(now())
+  apologies    Apology[]
+  twitterId    String?   @unique
+}
+
+model Apology {
+  id             String        @id @default(uuid())
+  offender       User          @relation(fields: [offenderId], references: [id])
+  offenderId     String
+  victimWallet   String
+  contractAddr   String        @unique
+  stakeAmount    Int          // lamports
+  nftCID         String?      // IPFS CID
+  probationDays  Int
+  status         ApologyStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+}
+
+enum ApologyStatus {
+  ACTIVE
+  COMPLETED
+}
+
