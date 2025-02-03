@@ -1,84 +1,338 @@
-# Turborepo starter
+# ApologyStake : Tokenized Apology Protocol (TAP) - Technical Specification
 
-This Turborepo starter is maintained by the Turborepo core team.
+## Table of Contents
 
-## Using this example
+1. [Core Features](#core-features)
+2. [System Components](#system-components)
+3. [Smart Contract Functions](#smart-contract-functions)
+4. [Frontend Pages & Components](#frontend-pages--components)
+5. [Backend API Endpoints](#backend-api-endpoints)
+6. [Social Media Integration Details](#social-media-integration-details)
+7. [Data Models](#data-models)
+8. [Sequence Diagrams](#sequence-diagrams)
+9. [Error Handling](#error-handling)
+10. [Audit & Monitoring](#audit--monitoring)
 
-Run the following command:
+## Core Features
 
-```sh
-npx create-turbo@latest
+### 1. Apology Creation & Staking
+
+#### Offender Flow:
+
+- Connect Phantom Wallet
+- Input Fields:
+  - Victim's Wallet Address
+  - Probation Period (7/30/90 days)
+  - Stake Type (SOL or NFT)
+  - Apology Message (text/JSON metadata)
+- Sign Transaction:
+  - SOL: Transfer to PDA Escrow
+  - NFT: Transfer to PDA via SPL Token Program
+- Mint Apology NFT:
+  - Metadata stored on IPFS (using NFT.Storage)
+  - NFT contains:
+    - Original apology text
+    - Stake details
+    - Contract address
+
+### 2. Victim Resolution Workflow
+
+#### Actions:
+
+- `Release Stake`: Return funds to offender after probation
+- `Claim Stake`: Take ownership of staked assets
+
+#### Conditions:
+
+- Victim must sign transaction
+- Probation period must have elapsed (checked via Solana Clock)
+- Contract must be in `ACTIVE` state
+
+### 3. Social Accountability
+
+#### Tokenized Apology NFT:
+
+- Embedded "View Apology" link
+- Verifiable on Solana explorers
+- Auto-post to Twitter via API (opt-in)
+
+#### Reputation Tracker:
+
+- Public dashboard showing:
+  - Total apologies created
+  - Success/failure rate
+  - Historical stakes
+
+## System Components
+
+### 1. Solana Program (Anchor)
+
+| Component        | Description                                   |
+| ---------------- | --------------------------------------------- |
+| `ApologyAccount` | PDA storing apology state (8 bytes + dynamic) |
+| `Escrow`         | PDA holding SOL/NFTs (owned by program)       |
+| `Error Codes`    | Custom errors (e.g., `ProbationNotOver`)      |
+
+### 2. Frontend (Next.js)
+
+| Page            | Components                                    |
+| --------------- | --------------------------------------------- |
+| `/create`       | Wallet connector, stake form, NFT preview     |
+| `/dashboard`    | Active apologies table, filter by status      |
+| `/apology/[id]` | Apology details, countdown timer, action CTAs |
+| `/twitter-auth` | OAuth 2.0 flow for Twitter integration        |
+
+### 3. Backend Services
+
+| Service       | Tech Stack             | Purpose                   |
+| ------------- | ---------------------- | ------------------------- |
+| API Server    | Next.js API Routes     | Bridge frontend ↔ Solana |
+| IPFS Uploader | NFT.Storage SDK        | Store apology metadata    |
+| Twitter Bot   | Twitter API v2 + OAuth | Auto-post NFTs            |
+
+## Smart Contract Functions
+
+### 1. `initialize_apology`
+
+#### Parameters:
+
+- `offender: Pubkey` (signer)
+- `victim: Pubkey`
+- `probation_days: u64`
+- `stake_amount: u64` (lamports)
+- `nft_mint: Option<Pubkey>` (if NFT stake)
+
+#### Logic:
+
+- Create `ApologyAccount` PDA
+- Transfer SOL/NFT to escrow PDA
+- Set probation end = current slot + (probation_days \* slots_per_day)
+
+#### Errors:
+
+- `InsufficientFunds`: Offender balance < stake_amount
+- `InvalidNFTTransfer`: NFT not owned by offender
+
+### 2. `release_stake`
+
+#### Parameters:
+
+- `victim: Pubkey` (signer)
+- `apology_account: Pubkey`
+
+#### Checks:
+
+- Current slot > probation_end
+- `apology_account.status == Active`
+
+#### Actions:
+
+- Transfer SOL/NFT from escrow → offender
+- Update status → `Completed`
+
+### 3. `claim_stake`
+
+#### Parameters:
+
+Same as `release_stake`
+
+#### Actions:
+
+- Transfer SOL/NFT → victim
+- Burn Apology NFT (if applicable)
+
+## Frontend Pages & Components
+
+### 1. `/create` Page
+
+#### Step 1: Wallet Connection
+
+- Uses `@solana/wallet-adapter-react`
+
+#### Step 2: Stake Details
+
+- SOL Input (converted to lamports)
+- NFT Selector (fetches user's SPL tokens)
+
+#### Step 3: Preview & Sign
+
+- Shows estimated gas fee
+- Renders apology NFT preview
+
+### 2. `/dashboard` Page
+
+#### Filters:
+
+- `Status`: Active/Completed
+- `Stake Type`: SOL/NFT
+
+#### Columns:
+
+- Date Created
+- Victim Address (truncated)
+- Probation End Date
+- Stake Amount
+- Actions (View/Share)
+
+### 3. `/apology/[id]` Page
+
+#### Dynamic Data:
+
+- Fetches apology state from chain
+- Countdown timer (if probation ongoing)
+
+#### Action Buttons:
+
+- `Release Stake`: Only visible to victim post-probation
+- `Claim Stake`: Same as above
+- `Share on Twitter`: Links to pre-filled tweet
+
+## Backend API Endpoints
+
+### 1. `POST /api/apology/create`
+
+#### Request:
+
+```json
+{
+  "offender": "Fzv5k...",
+  "victim": "Hx8d...",
+  "probationDays": 30,
+  "stakeAmount": 1.5,
+  "nftMint": null
+}
 ```
 
-## What's inside?
+#### Response:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
+```json
+{
+  "txId": "5bz1...",
+  "apologyId": "abc-123",
+  "nftUrl": "ipfs://bafy..."
+}
 ```
 
-### Develop
+### 2. `GET /api/apology/:id`
 
-To develop all apps and packages, run the following command:
+#### Response:
 
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```json
+{
+  "status": "ACTIVE",
+  "stakeAmount": 1500000000,
+  "probationEnd": "2023-10-05T00:00:00Z",
+  "nftMetadata": {
+    /* IPFS JSON */
+  }
+}
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 3. `POST /api/twitter/post`
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+#### Request:
 
+```json
+{
+  "apologyId": "abc-123",
+  "accessToken": "tw_123..."
+}
 ```
-npx turbo link
+
+#### Response:
+
+```json
+{
+  "tweetId": "1678..."
+}
 ```
 
-## Useful Links
+## Data Models
 
-Learn more about the power of Turborepo:
+### 1. Solana Account Layout (Anchor)
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+```rust
+#[account]
+pub struct ApologyAccount {
+    pub offender: Pubkey,      // 32
+    pub victim: Pubkey,        // 32
+    pub probation_end: i64,    // 8
+    pub stake_amount: u64,     // 8
+    pub nft_mint: Option<Pubkey>, // 33 (1 + 32)
+    pub status: ApologyStatus, // 1
+    // Total: 114 bytes
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub enum ApologyStatus {
+    Active,
+    Completed,
+}
+```
+
+### 2. Database Schema (Prisma)
+
+```prisma
+model User {
+  id           String    @id @default(uuid())
+  wallet       String    @unique
+  createdAt    DateTime  @default(now())
+  apologies    Apology[]
+  twitterId    String?   @unique
+}
+
+model Apology {
+  id             String        @id @default(uuid())
+  offender       User          @relation(fields: [offenderId], references: [id])
+  offenderId     String
+  victimWallet   String
+  contractAddr   String        @unique
+  stakeAmount    Int          // lamports
+  nftCID         String?      // IPFS CID
+  probationDays  Int
+  status         ApologyStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+}
+```
+
+## Sequence Diagrams
+
+### Apology Creation
+
+```mermaid
+sequenceDiagram
+    participant Offender
+    participant Frontend
+    participant Solana Program
+    participant IPFS
+
+    Offender->>Frontend: Fill apology form
+    Frontend->>Solana Program: Get recent blockhash
+    Solana Program-->>Frontend: blockhash
+    Frontend->>Offender: Sign transaction
+    Offender->>Solana Program: initialize_apology()
+    Solana Program->>IPFS: Store metadata
+    IPFS-->>Solana Program: CID
+    Solana Program-->>Frontend: TX confirmed
+```
+
+## Error Handling
+
+### Contract Errors
+
+| Error Code       | Scenario                          |
+| ---------------- | --------------------------------- |
+| NotVictim        | Wrong signer for release/claim    |
+| ProbationOngoing | Victim acts before probation ends |
+| InvalidStake     | NFT not transferred properly      |
+
+### API Errors
+
+```json
+{
+  "error": "INSUFFICIENT_FUNDS",
+  "message": "Add 0.05 SOL to your wallet",
+  "required": 50000000,
+  "available": 30000000
+}
+```
