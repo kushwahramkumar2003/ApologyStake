@@ -34,6 +34,7 @@ export interface ApologyParams {
   probationDays: number;
   stakeAmount: number;
   message: string;
+  victimTwitter: string;
 }
 
 export interface ApologyAccount {
@@ -45,6 +46,7 @@ export interface ApologyAccount {
   createdAt: anchor.BN;
   status: { active?: {} } | { completed?: {} };
   message: string;
+  victimTwitter: string;
 }
 
 export class ApologyStakeProgram {
@@ -225,7 +227,8 @@ export class ApologyStakeProgram {
           new anchor.BN(params.probationDays),
           new anchor.BN(params.stakeAmount),
           params.message,
-          new anchor.BN(nonce)
+          new anchor.BN(nonce),
+          params.victimTwitter
         )
         .accounts({
           apology: apologyPDA,
