@@ -1,16 +1,25 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import configs from "./config";
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: configs.nextAuthSecret });
-  console.log("Token", token);
   const { pathname } = req.nextUrl;
 
-  const publicRoutes = ["/", "/auth"];
+  // Define public route patterns
+  const publicRoutePatterns = [
+    /^\/$/, // Root path
+    /^\/auth$/, // Auth page
+    /^\/apology\/[^/]+$/, // Matches /apology/{id}
+    /^\/api\/auth\/.*/, // NextAuth.js auth routes
+  ];
 
-  if (publicRoutes.includes(pathname) || pathname.startsWith("/api/auth")) {
+  // Check if the pathname matches any public route pattern
+  const isPublicRoute = publicRoutePatterns.some((pattern) =>
+    pattern.test(pathname)
+  );
+
+  if (isPublicRoute) {
     return NextResponse.next();
   }
 
