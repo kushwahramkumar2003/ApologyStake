@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -15,6 +18,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Sparkles } from "@/components/ui/sparkles";
 import {
   ArrowRight,
   Shield,
@@ -25,6 +29,35 @@ import {
   Timer,
   Share2,
 } from "lucide-react";
+import { TracingBeam } from "@/components/ui/tracing-beam";
+import { BackgroundBeams } from "@/components/ui/background-beams";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+
+const features = [
+  {
+    icon: Shield,
+    title: "Secure Staking",
+    description:
+      "Lock SOL or NFTs in smart contracts as collateral for your commitment",
+  },
+  {
+    icon: Timer,
+    title: "Probation Period",
+    description: "Set customizable timeframes to demonstrate improved behavior",
+  },
+  {
+    icon: Share2,
+    title: "Social Integration",
+    description: "Share your commitment on social media with NFT certificates",
+  },
+];
+
+const stats = [
+  { value: "50K+", label: "Active Users" },
+  { value: "$2M+", label: "Total Staked" },
+  { value: "95%", label: "Success Rate" },
+  { value: "24/7", label: "Support" },
+];
 
 export default function Home() {
   return (
@@ -33,29 +66,115 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container py-24 md:py-32 space-y-8">
-          <div className="flex flex-col items-center text-center space-y-4">
-            <Badge variant="outline" className="px-4 py-1">
-              Built on Solana
-            </Badge>
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              Make Apologies <br className="hidden sm:inline" />
-              Mean Something
-            </h1>
-            <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-              Stake SOL to prove your commitment to change. ApologyStake brings
-              accountability to reconciliation through blockchain technology.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button size="lg" asChild>
-                <Link href="/create">
-                  Create Apology <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/dashboard">View Dashboard</Link>
-              </Button>
+        <section className="relative overflow-hidden">
+          <BackgroundBeams className="absolute inset-0" />
+          <div className="container relative z-10 py-24 md:py-32 space-y-8">
+            <div className="flex flex-col items-center text-center space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Badge
+                  variant="outline"
+                  className="px-4 py-1 backdrop-blur-sm bg-background/30"
+                >
+                  Built on Solana
+                </Badge>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="max-w-4xl space-y-4"
+              >
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+                  <TextGenerateEffect words="Transform Apologies into Actions" />
+                </h1>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  ApologyStake revolutionizes reconciliation through blockchain
+                  technology. Stake SOL to prove your commitment to change and
+                  rebuild trust with meaningful accountability.
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex flex-wrap justify-center gap-4"
+              >
+                <Button size="lg" className="rounded-full" asChild>
+                  <Link href="/create">
+                    Create Apology <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="rounded-full"
+                  asChild
+                >
+                  <Link href="/dashboard">View Dashboard</Link>
+                </Button>
+              </motion.div>
             </div>
+          </div>
+        </section>
+
+        {/* Problem Statement Section */}
+        <section className="border-t bg-muted/50">
+          <div className="container py-16 md:py-24">
+            <TracingBeam>
+              <div className="grid gap-12 md:grid-cols-2 items-center">
+                <div className="space-y-4">
+                  <h2 className="text-3xl font-bold tracking-tighter">
+                    The Problem
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Traditional apologies often lack accountability and
+                    measurable commitment to change. Words alone can feel empty,
+                    making it difficult for victims to trust and move forward.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  <h2 className="text-3xl font-bold tracking-tighter">
+                    Our Solution
+                  </h2>
+                  <p className="text-muted-foreground">
+                    ApologyStake introduces a blockchain-based system where
+                    offenders stake assets as collateral for their commitment to
+                    change, creating real accountability and incentives for
+                    genuine improvement.
+                  </p>
+                </div>
+              </div>
+            </TracingBeam>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="container py-16">
+          <div className="grid gap-8 md:grid-cols-4">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card>
+                  <CardHeader className="space-y-0 pb-2">
+                    <CardTitle className="text-3xl font-bold">
+                      {stat.value}
+                    </CardTitle>
+                    <CardDescription>{stat.label}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </section>
 
@@ -69,35 +188,34 @@ export default function Home() {
               Everything you need to make meaningful apologies
             </p>
           </div>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <Shield className="h-10 w-10 mb-2 text-primary" />
-                <CardTitle>Secure Staking</CardTitle>
-                <CardDescription>
-                  Lock SOL or NFTs in smart contracts as collateral for your
-                  commitment
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Timer className="h-10 w-10 mb-2 text-primary" />
-                <CardTitle>Probation Period</CardTitle>
-                <CardDescription>
-                  Set customizable timeframes to demonstrate improved behavior
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <Share2 className="h-10 w-10 mb-2 text-primary" />
-                <CardTitle>Social Integration</CardTitle>
-                <CardDescription>
-                  Share your commitment on social media with NFT certificates
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          <div className="grid gap-8 md:grid-cols-3">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative overflow-hidden">
+                  <Sparkles
+                    className="absolute inset-0"
+                    particleColor="var(--primary)"
+                    particleDensity={200}
+                    speed={0.5}
+                    minSize={0.5}
+                    maxSize={1}
+                    particleOffsetTop={0}
+                    particleOffsetBottom={0}
+                  />
+                  <CardHeader className="relative">
+                    <feature.icon className="h-10 w-10 mb-2 text-primary" />
+                    <CardTitle>{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </section>
 
