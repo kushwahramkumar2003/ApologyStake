@@ -46,6 +46,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react"; // Added import for React
 import { useProgram } from "../hook/use-program";
+import { WalletConnect } from "@/components/wallet-connect";
 
 interface Apology {
   publicKey: PublicKey;
@@ -196,7 +197,11 @@ export default function DashboardPage() {
             <CardDescription>
               Please connect your wallet to view your apologies.
             </CardDescription>
+            
           </CardHeader>
+          <CardContent>
+            <WalletConnect/>
+          </CardContent>
         </Card>
       </div>
     );

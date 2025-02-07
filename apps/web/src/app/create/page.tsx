@@ -35,6 +35,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useProgram } from "../hook/use-program";
+import { WalletConnect } from "@/components/wallet-connect";
 
 // Constants from program
 const MIN_PROBATION_DAYS = 7;
@@ -146,7 +147,7 @@ export default function CreatePage() {
 
   if (!connected) {
     return (
-      <div className="container py-12">
+      <div className="py-12">
         <Card>
           <CardHeader>
             <CardTitle>Connect Wallet</CardTitle>
@@ -154,6 +155,9 @@ export default function CreatePage() {
               Please connect your wallet to create an apology.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <WalletConnect />
+          </CardContent>
         </Card>
       </div>
     );
