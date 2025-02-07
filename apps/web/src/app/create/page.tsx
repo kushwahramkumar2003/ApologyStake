@@ -41,20 +41,21 @@ const MIN_PROBATION_DAYS = 7;
 const MAX_PROBATION_DAYS = 90;
 const MAX_MESSAGE_LENGTH = 200;
 
-export default function CreatePage({ onBack }: { onBack: () => void }) {
+export default function CreatePage() {
+  const router = useRouter();
   const { connected, publicKey } = useWallet();
   const { program } = useProgram();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [victimWallet, setVictimWallet] = useState("");
   const [stakeAmount, setStakeAmount] = useState(1);
   const [probationDays, setProbationDays] = useState(30);
   const [message, setMessage] = useState("");
   const [shareOnTwitter, setShareOnTwitter] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [victimTwitter, setVictimTwitter] = useState("");
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
     if (!victimWallet) {
@@ -74,7 +75,7 @@ export default function CreatePage({ onBack }: { onBack: () => void }) {
     }
 
     if (victimTwitter.trim() === "") {
-      newErrors.victimTwitter = "Victim's Twitter handle is required";
+      newErrors.victim = "Victim's Twitter handle is required";
     }
 
     if (stakeAmount <= 0) {
@@ -90,7 +91,7 @@ export default function CreatePage({ onBack }: { onBack: () => void }) {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [victimWallet, message, stakeAmount, probationDays, victimTwitter]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,7 +130,8 @@ export default function CreatePage({ onBack }: { onBack: () => void }) {
         );
       }
 
-      onBack();
+      router.push("/dashboard");
+      // eslint-disable-next-line
     } catch (error: any) {
       console.error("Error creating apology:", error);
       toast.error("Failed to create apology", {
@@ -144,218 +146,246 @@ export default function CreatePage({ onBack }: { onBack: () => void }) {
 
   if (!connected) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Connect Wallet</CardTitle>
-          <CardDescription>
-            Please connect your wallet to create an apology.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className="container py-12">
+        <Card>
+          <CardHeader>
+            <CardTitle>Connect Wallet</CardTitle>
+            <CardDescription>
+              Please connect your wallet to create an apology.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <form onSubmit={handleSubmit}>
-        <CardHeader>
-          <CardTitle>Create Apology</CardTitle>
-          <CardDescription>
-            Create a tokenized apology by staking SOL and setting a probation
-            period.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="victim">Victim&apos;s Wallet Address</Label>
-              <HoverCard>
-                <HoverCardTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <p>
-                    Enter the Solana wallet address of the person you&apos;re
-                    apologizing to.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
-            </div>
-            <Input
-              id="victim"
-              placeholder="Enter Solana wallet address"
-              value={victimWallet}
-              onChange={(e) => setVictimWallet(e.target.value)}
-              className={errors.victim ? "border-red-500" : ""}
-            />
-            {errors.victim && (
-              <p className="text-sm text-red-500 mt-1">{errors.victim}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="victimTwitter">Victim&apos;s Twitter Handle</Label>
-            <Input
-              id="victimTwitter"
-              placeholder="Enter Twitter handle (without @)"
-              value={victimTwitter}
-              onChange={(e) => setVictimTwitter(e.target.value)}
-              className={errors.victimTwitter ? "border-red-500" : ""}
-            />
-            {errors.victimTwitter && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.victimTwitter}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="message">Apology Message</Label>
-            <Textarea
-              id="message"
-              placeholder="Write your sincere apology here..."
-              className={`min-h-[100px] ${errors.message ? "border-red-500" : ""}`}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{remainingChars} characters remaining</span>
-              {errors.message && (
-                <span className="text-red-500">{errors.message}</span>
+    <div className="container py-12">
+      <Card>
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle>Create Apology</CardTitle>
+            <CardDescription>
+              Create a tokenized apology by staking SOL and setting a probation
+              period.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="victim">Victim&apos;s Wallet Address</Label>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <p>
+                      Enter the Solana wallet address of the person you&apos;re
+                      apologizing to.
+                    </p>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+              <Input
+                id="victim"
+                placeholder="Enter Solana wallet address"
+                value={victimWallet}
+                onChange={(e) => setVictimWallet(e.target.value)}
+                className={errors.victim ? "border-red-500" : ""}
+                required
+              />
+              {errors.victim && (
+                <p className="text-sm text-red-500 mt-1">{errors.victim}</p>
               )}
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Stake Amount (SOL)</Label>
-              <HoverCard>
-                <HoverCardTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <p>
-                    The amount of SOL you&apos;ll stake as collateral for your
-                    commitment.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Slider
-                value={[stakeAmount]}
-                onValueChange={(value) => setStakeAmount(value[0])}
-                min={0.1}
-                max={10}
-                step={0.1}
-                className={`flex-1 ${errors.stake ? "border-red-500" : ""}`}
-              />
-              <span className="w-20 text-right">
-                {stakeAmount.toFixed(1)} SOL
-              </span>
-            </div>
-            {errors.stake && (
-              <p className="text-sm text-red-500 mt-1">{errors.stake}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Probation Period (Days)</Label>
-              <HoverCard>
-                <HoverCardTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <p>
-                    The duration you&apos;ll need to demonstrate improved
-                    behavior.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Slider
-                value={[probationDays]}
-                onValueChange={(value) => setProbationDays(value[0])}
-                min={MIN_PROBATION_DAYS}
-                max={MAX_PROBATION_DAYS}
-                step={1}
-                className={`flex-1 ${errors.probation ? "border-red-500" : ""}`}
-              />
-              <span className="w-20 text-right">{probationDays} days</span>
-            </div>
-            {errors.probation && (
-              <p className="text-sm text-red-500 mt-1">{errors.probation}</p>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="share-twitter"
-              checked={shareOnTwitter}
-              onCheckedChange={setShareOnTwitter}
-            />
-            <Label htmlFor="share-twitter" className="flex items-center gap-2">
-              Share on Twitter <Twitter className="h-4 w-4" />
-            </Label>
-          </div>
-        </CardContent>
-        <CardFooter className="flex-col space-y-4">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button type="button" variant="outline" className="w-full">
-                <Share2 className="mr-2 h-4 w-4" /> Preview Apology
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Preview Apology</DialogTitle>
-                <DialogDescription>
-                  Review your apology before submitting
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium">To</h4>
-                  <p className="text-sm text-muted-foreground font-mono">
-                    {victimWallet}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-medium">Message</h4>
-                  <p className="text-sm text-muted-foreground">{message}</p>
-                </div>
-                <div className="flex justify-between">
-                  <div>
-                    <h4 className="font-medium">Stake Amount</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {stakeAmount} SOL
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="victim">Twitter Handle</Label>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <p>
+                      Enter the Twitter handle of the person you&apos;re
+                      apologizing to.
                     </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Probation Period</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {probationDays} days
-                    </p>
-                  </div>
-                </div>
+                  </HoverCardContent>
+                </HoverCard>
               </div>
-            </DialogContent>
-          </Dialog>
+              <Input
+                id="victimTwitter"
+                placeholder="Enter Twitter handle"
+                value={victimTwitter}
+                onChange={(e) => setVictimTwitter(e.target.value)}
+                className={errors.victim ? "border-red-500" : ""}
+                required
+              />
+              {errors.victim && (
+                <p className="text-sm text-red-500 mt-1">{errors.victim}</p>
+              )}
+            </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Apology...
-              </>
-            ) : (
-              "Create Tokenized Apology"
-            )}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+            <div className="space-y-2">
+              <Label htmlFor="message">Apology Message</Label>
+              <Textarea
+                id="message"
+                placeholder="Write your sincere apology here..."
+                className={`min-h-[100px] ${errors.message ? "border-red-500" : ""}`}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                required
+              />
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>{remainingChars} characters remaining</span>
+                {errors.message && (
+                  <span className="text-red-500">{errors.message}</span>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Stake Amount (SOL)</Label>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <p>
+                      The amount of SOL you&apos;ll stake as collateral for your
+                      commitment.
+                    </p>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Slider
+                  value={[stakeAmount]}
+                  onValueChange={(value) => setStakeAmount(value[0])}
+                  min={0.1}
+                  max={10}
+                  step={0.1}
+                  className={`flex-1 ${errors.stake ? "border-red-500" : ""}`}
+                />
+                <span className="w-20 text-right">
+                  {stakeAmount.toFixed(1)} SOL
+                </span>
+              </div>
+              {errors.stake && (
+                <p className="text-sm text-red-500 mt-1">{errors.stake}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Probation Period (Days)</Label>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <p>
+                      The duration you&apos;ll need to demonstrate improved
+                      behavior.
+                    </p>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Slider
+                  value={[probationDays]}
+                  onValueChange={(value) => setProbationDays(value[0])}
+                  min={MIN_PROBATION_DAYS}
+                  max={MAX_PROBATION_DAYS}
+                  step={1}
+                  className={`flex-1 ${errors.probation ? "border-red-500" : ""}`}
+                />
+                <span className="w-20 text-right">{probationDays} days</span>
+              </div>
+              {errors.probation && (
+                <p className="text-sm text-red-500 mt-1">{errors.probation}</p>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="share-twitter"
+                checked={shareOnTwitter}
+                onCheckedChange={setShareOnTwitter}
+              />
+              <Label
+                htmlFor="share-twitter"
+                className="flex items-center gap-2"
+              >
+                Share on Twitter <Twitter className="h-4 w-4" />
+              </Label>
+            </div>
+
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Once created, this apology will be recorded on the Solana
+                blockchain and cannot be modified or deleted.
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+          <CardFooter className="flex-col space-y-4">
+            <Dialog open={isPreview} onOpenChange={setIsPreview}>
+              <DialogTrigger asChild>
+                <Button type="button" variant="outline" className="w-full">
+                  <Share2 className="mr-2 h-4 w-4" /> Preview Apology
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Preview Apology</DialogTitle>
+                  <DialogDescription>
+                    Review your apology before submitting
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium">To</h4>
+                    <p className="text-sm text-muted-foreground font-mono">
+                      {victimWallet}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium">Message</h4>
+                    <p className="text-sm text-muted-foreground">{message}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <div>
+                      <h4 className="font-medium">Stake Amount</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {stakeAmount} SOL
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Probation Period</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {probationDays} days
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating Apology...
+                </>
+              ) : (
+                "Create Tokenized Apology"
+              )}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   );
 }

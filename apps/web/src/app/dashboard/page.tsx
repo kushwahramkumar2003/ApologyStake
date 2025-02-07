@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { type PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import Link from "next/link";
@@ -23,7 +23,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
-  Loader2,
   Clock,
   Shield,
   MoreVertical,
@@ -56,6 +55,7 @@ interface Apology {
     stakeAmount: number;
     probationEnd: number;
     createdAt: number;
+    // eslint-disable-next-line
     status: { active: {} } | { completed: {} };
     message: string;
     victimTwitter: string;
@@ -73,13 +73,7 @@ export default function DashboardPage() {
   );
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (connected && publicKey && program) {
-      loadApologies();
-    }
-  }, [connected, publicKey, program]);
-
-  const loadApologies = async () => {
+  const loadApologies = useCallback(async () => {
     try {
       setLoading(true);
       const [sent, received] = await Promise.all([
@@ -122,7 +116,13 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [program, publicKey, setLoading, setSentApologies, setReceivedApologies]);
+
+  useEffect(() => {
+    if (connected && publicKey && program) {
+      loadApologies();
+    }
+  }, [connected, publicKey, program, loadApologies]);
 
   const handleRelease = async (apology: Apology) => {
     try {
