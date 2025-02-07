@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/Providers";
+import "@solana/wallet-adapter-react-ui/styles.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
