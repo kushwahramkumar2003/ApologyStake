@@ -28,6 +28,9 @@ import {
   CheckCircle2,
   Timer,
   Share2,
+  Star,
+  Zap,
+  ArrowUpRight,
 } from "lucide-react";
 import { TracingBeam } from "@/components/ui/tracing-beam";
 import { BackgroundBeams } from "@/components/ui/background-beams";
@@ -53,10 +56,33 @@ const features = [
 ];
 
 const stats = [
-  { value: "50K+", label: "Active Users" },
-  { value: "$2M+", label: "Total Staked" },
-  { value: "95%", label: "Success Rate" },
-  { value: "24/7", label: "Support" },
+  { value: "50K+", label: "Active Users", icon: Users },
+  { value: "$2M+", label: "Total Staked", icon: Wallet },
+  { value: "95%", label: "Success Rate", icon: CheckCircle2 },
+  { value: "24/7", label: "Support", icon: Shield },
+];
+
+const howItWorks = [
+  {
+    icon: Wallet,
+    title: "Connect Wallet",
+    description: "Link your Solana wallet to get started",
+  },
+  {
+    icon: Shield,
+    title: "Stake Assets",
+    description: "Lock SOL or NFTs as commitment collateral",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Prove Growth",
+    description: "Demonstrate improved behavior during probation",
+  },
+  {
+    icon: Award,
+    title: "Reclaim Stake",
+    description: "Get your assets back after successful completion",
+  },
 ];
 
 export default function Home() {
@@ -66,20 +92,23 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden">
-          <BackgroundBeams className="absolute inset-0" />
-          <div className="container relative z-10 py-24 md:py-32 space-y-8">
-            <div className="flex flex-col items-center text-center space-y-8">
+        <section className="relative min-h-[80vh] overflow-hidden flex items-center">
+          <BackgroundBeams className="absolute inset-0 opacity-40" />
+          <div className="container relative z-10 py-16 md:py-24 lg:py-32">
+            <div className="flex flex-col items-center text-center space-y-8 max-w-5xl mx-auto px-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
+                className="flex items-center gap-2"
               >
                 <Badge
                   variant="outline"
-                  className="px-4 py-1 backdrop-blur-sm bg-background/30"
+                  className="px-4 py-1 backdrop-blur-sm bg-background/30 border-primary/20"
                 >
+                  <Star className="h-4 w-4 mr-1 text-yellow-500 animate-pulse" />
                   Built on Solana
+                  <Zap className="h-4 w-4 ml-1 text-yellow-500 animate-pulse" />
                 </Badge>
               </motion.div>
 
@@ -87,12 +116,12 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="max-w-4xl space-y-4"
+                className="space-y-6"
               >
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
                   <TextGenerateEffect words="Transform Apologies into Actions" />
                 </h1>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                <p className="mx-auto max-w-[700px] text-muted-foreground text-base sm:text-lg md:text-xl leading-relaxed">
                   ApologyStake revolutionizes reconciliation through blockchain
                   technology. Stake SOL to prove your commitment to change and
                   rebuild trust with meaningful accountability.
@@ -103,9 +132,13 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="flex flex-wrap justify-center gap-4"
+                className="flex flex-wrap justify-center gap-4 w-full"
               >
-                <Button size="lg" className="rounded-full" asChild>
+                <Button
+                  size="lg"
+                  className="rounded-full text-base h-12 px-6 hover:scale-105 transition-transform"
+                  asChild
+                >
                   <Link href="/create">
                     Create Apology <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -113,10 +146,12 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="rounded-full"
+                  className="rounded-full text-base h-12 px-6 hover:scale-105 transition-transform backdrop-blur-sm bg-background/30"
                   asChild
                 >
-                  <Link href="/dashboard">View Dashboard</Link>
+                  <Link href="/dashboard">
+                    View Dashboard <ArrowUpRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
               </motion.div>
             </div>
@@ -124,39 +159,51 @@ export default function Home() {
         </section>
 
         {/* Problem Statement Section */}
-        <section className="border-t bg-muted/50">
-          <div className="container py-16 md:py-24">
+        <section className="border-t border-primary/10 bg-muted/50">
+          <div className="container py-16 md:py-24 lg:py-32 px-4">
             <TracingBeam>
               <div className="grid gap-12 md:grid-cols-2 items-center">
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-bold tracking-tighter">
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5 }}
+                  viewport={{ once: true }}
+                >
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter">
                     The Problem
                   </h2>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                     Traditional apologies often lack accountability and
                     measurable commitment to change. Words alone can feel empty,
                     making it difficult for victims to trust and move forward.
                   </p>
-                </div>
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-bold tracking-tighter">
+                </motion.div>
+                <motion.div
+                  className="space-y-4"
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5 }}
+                  viewport={{ once: true }}
+                >
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter">
                     Our Solution
                   </h2>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
                     ApologyStake introduces a blockchain-based system where
                     offenders stake assets as collateral for their commitment to
                     change, creating real accountability and incentives for
                     genuine improvement.
                   </p>
-                </div>
+                </motion.div>
               </div>
             </TracingBeam>
           </div>
         </section>
 
         {/* Stats Section */}
-        <section className="container py-16">
-          <div className="grid gap-8 md:grid-cols-4">
+        <section className="container py-16 md:py-24 px-4">
+          <div className="grid gap-6 sm:gap-8 grid-cols-2 md:grid-cols-4">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -165,12 +212,15 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card>
-                  <CardHeader className="space-y-0 pb-2">
-                    <CardTitle className="text-3xl font-bold">
+                <Card className="border-primary/10 backdrop-blur-sm bg-background/30 hover:bg-background/40 transition-colors">
+                  <CardHeader className="space-y-2">
+                    <stat.icon className="h-6 w-6 text-primary/60" />
+                    <CardTitle className="text-2xl sm:text-3xl font-bold">
                       {stat.value}
                     </CardTitle>
-                    <CardDescription>{stat.label}</CardDescription>
+                    <CardDescription className="text-sm sm:text-base">
+                      {stat.label}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               </motion.div>
@@ -179,16 +229,19 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="container py-16 md:py-24">
-          <div className="text-center mb-12">
+        <section
+          id="features"
+          className="container py-16 md:py-24 lg:py-32 px-4"
+        >
+          <div className="text-center mb-12 space-y-4">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Key Features
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
               Everything you need to make meaningful apologies
             </p>
           </div>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-3">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -196,22 +249,25 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.02 }}
               >
-                <Card className="relative overflow-hidden">
+                <Card className="relative overflow-hidden h-full border-primary/10 backdrop-blur-sm bg-background/30">
                   <Sparkles
                     className="absolute inset-0"
                     particleColor="var(--primary)"
-                    particleDensity={200}
+                    particleDensity={100}
                     speed={0.5}
                     minSize={0.5}
                     maxSize={1}
-                    particleOffsetTop={0}
-                    particleOffsetBottom={0}
                   />
-                  <CardHeader className="relative">
-                    <feature.icon className="h-10 w-10 mb-2 text-primary" />
-                    <CardTitle>{feature.title}</CardTitle>
-                    <CardDescription>{feature.description}</CardDescription>
+                  <CardHeader className="relative space-y-4">
+                    <feature.icon className="h-8 w-8 text-primary" />
+                    <CardTitle className="text-xl sm:text-2xl">
+                      {feature.title}
+                    </CardTitle>
+                    <CardDescription className="text-base sm:text-lg">
+                      {feature.description}
+                    </CardDescription>
                   </CardHeader>
                 </Card>
               </motion.div>
@@ -220,56 +276,56 @@ export default function Home() {
         </section>
 
         {/* How it Works Section */}
-        <section id="how-it-works" className="border-t bg-muted/50">
-          <div className="container py-16 md:py-24">
-            <div className="text-center mb-12">
+        <section
+          id="how-it-works"
+          className="border-t border-primary/10 bg-muted/50"
+        >
+          <div className="container py-16 md:py-24 lg:py-32 px-4">
+            <div className="text-center mb-12 space-y-4">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 How It Works
               </h2>
-              <p className="mt-4 text-muted-foreground">
+              <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
                 Simple steps to make your apology meaningful
               </p>
             </div>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <Wallet className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-semibold">Connect Wallet</h3>
-                <p className="text-muted-foreground">
-                  Link your Solana wallet to get started
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4">
-                <Shield className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-semibold">Stake Assets</h3>
-                <p className="text-muted-foreground">
-                  Lock SOL or NFTs as commitment collateral
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4">
-                <CheckCircle2 className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-semibold">Prove Growth</h3>
-                <p className="text-muted-foreground">
-                  Demonstrate improved behavior during probation
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-4">
-                <Award className="h-12 w-12 text-primary" />
-                <h3 className="text-xl font-semibold">Reclaim Stake</h3>
-                <p className="text-muted-foreground">
-                  Get your assets back after successful completion
-                </p>
-              </div>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {howItWorks.map((step, index) => (
+                <motion.div
+                  key={index}
+                  className="flex flex-col items-center text-center space-y-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
+                    <step.icon className="relative h-12 w-12 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">{step.title}</h3>
+                  <p className="text-muted-foreground text-base sm:text-lg">
+                    {step.description}
+                  </p>
+                  {index < howItWorks.length - 1 && (
+                    <ArrowRight className="hidden lg:block h-6 w-6 text-primary/40 absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2" />
+                  )}
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* Use Cases Section */}
-        <section id="use-cases" className="container py-16 md:py-24">
-          <div className="text-center mb-12">
+        <section
+          id="use-cases"
+          className="container py-16 md:py-24 lg:py-32 px-4"
+        >
+          <div className="text-center mb-12 space-y-4">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Use Cases
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
               Real-world applications of ApologyStake
             </p>
           </div>
@@ -306,13 +362,13 @@ export default function Home() {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="border-t bg-muted/50">
-          <div className="container py-16 md:py-24">
-            <div className="text-center mb-12">
+        <section id="faq" className="border-t border-primary/10 bg-muted/50">
+          <div className="container py-16 md:py-24 lg:py-32 px-4">
+            <div className="text-center mb-12 space-y-4">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-4 text-muted-foreground">
+              <p className="mt-4 text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
                 Common questions about ApologyStake
               </p>
             </div>
@@ -362,21 +418,31 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="container py-16 md:py-24">
-          <div className="flex flex-col items-center text-center space-y-4">
+        <section className="container py-16 md:py-24 lg:py-32 px-4">
+          <motion.div
+            className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
               Ready to Make Things Right?
             </h2>
-            <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl">
+            <p className="text-muted-foreground text-base sm:text-lg md:text-xl">
               Start your journey towards meaningful reconciliation today.
             </p>
-            <Button size="lg" asChild>
+            <Button
+              size="lg"
+              className="rounded-full text-base h-12 px-6 hover:scale-105 transition-transform"
+              asChild
+            >
               <Link href="/create">
                 Create Your First Apology{" "}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-          </div>
+          </motion.div>
         </section>
       </main>
 
