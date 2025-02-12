@@ -85,18 +85,19 @@ const privateNavItems = [
 
 export function SiteHeader() {
   const pathname = usePathname();
-
-  const [width, setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(0); // Initialize width to 0
+  const { connected } = useWallet();
 
   useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
+    if (typeof window !== "undefined") {
+      setWidth(window.innerWidth);
 
-    window.addEventListener("resize", handleResize);
+      const handleResize = () => setWidth(window.innerWidth);
+      window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
   }, []);
-
-  const { connected } = useWallet();
 
   const isPrivateRoute = ["/dashboard", "/create", "/apology"].some((route) =>
     pathname.startsWith(route)
