@@ -11,7 +11,7 @@ import { Apologystake } from "@/program/aplogystack";
 
 // Program constants
 export const PROGRAM_ID = new PublicKey(
-  "6W2YxRyMJoDEWWRsTmh8KdkAuz4AahY2WLMXh3ZEigBf"
+  "BEzAB38XypEyvKauzYz6CUKhigu3jgoFSzyLSW5ykUFJ"
 );
 export const MAX_MESSAGE_LENGTH = 200;
 export const MIN_PROBATION_DAYS = 1;
