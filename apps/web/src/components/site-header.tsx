@@ -79,17 +79,13 @@ const privateNavItems = [
     title: "Create New",
     href: "/create",
   },
-  {
-    title: "History",
-    href: "/history",
-  },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
   const { connected } = useWallet();
 
-  const isPrivateRoute = ["/dashboard", "/create", "/history"].some((route) =>
+  const isPrivateRoute = ["/dashboard", "/create", "/apology"].some((route) =>
     pathname.startsWith(route)
   );
 

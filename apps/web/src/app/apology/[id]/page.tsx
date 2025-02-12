@@ -227,7 +227,7 @@ export default function ApologyPage() {
 
   if (loading) {
     return (
-      <div className="container max-w-4xl py-12">
+      <div className="container py-12">
         <div className="space-y-8">
           <Skeleton className="h-8 w-[200px]" />
           <Skeleton className="h-[400px] w-full" />
@@ -236,9 +236,44 @@ export default function ApologyPage() {
     );
   }
 
+  // {!connected && (
+  //   <Card>
+  //     <CardContent className="flex items-center justify-between p-6">
+  //       <div className="flex items-center gap-4">
+  //         <AlertCircle className="h-6 w-6 text-muted-foreground" />
+  //         <div>
+  //           <h3 className="font-medium">Connect Wallet</h3>
+  //           <p className="text-sm text-muted-foreground">
+  //             Connect your wallet to interact with this apology
+  //           </p>
+  //         </div>
+  //       </div>
+  //       <Button>Connect Wallet</Button>
+  //     </CardContent>
+  //   </Card>
+  // )}
+
+  if(!connected){
+    return   ( <Card>
+    <CardContent className="flex items-center justify-between p-6">
+      <div className="flex items-center gap-4">
+        <AlertCircle className="h-6 w-6 text-muted-foreground" />
+        <div>
+          <h3 className="font-medium">Connect Wallet</h3>
+          <p className="text-sm text-muted-foreground">
+            Connect your wallet to interact with this apology
+          </p>
+        </div>
+      </div>
+      <Button>Connect Wallet</Button>
+    </CardContent>
+  </Card>
+   )
+  }
+
   if (!apology) {
     return (
-      <div className="container max-w-4xl py-12">
+      <div className="container py-12">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <XCircle className="h-12 w-12 text-muted-foreground" />
@@ -263,7 +298,7 @@ export default function ApologyPage() {
   const probationEnded = now >= apology.account.probationEnd;
 
   return (
-    <div className="container max-w-4xl py-12">
+    <div className="container  py-12">
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <Button variant="ghost" asChild>
