@@ -26,6 +26,8 @@ import {
 
 import { Menu, Shield, PlusCircle } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useEffect, useState } from "react";
+import GitHubStats from "./GitHubStats";
 
 const publicNavItems = [
   {
@@ -83,6 +85,17 @@ const privateNavItems = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const { connected } = useWallet();
 
   const isPrivateRoute = ["/dashboard", "/create", "/apology"].some((route) =>
@@ -167,7 +180,13 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-4">
-          <ThemeToggle />
+          {width > 480 && (
+            <>
+              <ThemeToggle />
+              <GitHubStats />
+            </>
+          )}
+
           <WalletConnect />
 
           {/* Mobile Navigation */}
@@ -231,6 +250,12 @@ export function SiteHeader() {
                       </Link>
                     ))}
                   </>
+                )}
+                {width <= 480 && (
+                  <div className="flex flex-col gap-2 items-center">
+                    <ThemeToggle />
+                    <GitHubStats />
+                  </div>
                 )}
               </nav>
             </SheetContent>
