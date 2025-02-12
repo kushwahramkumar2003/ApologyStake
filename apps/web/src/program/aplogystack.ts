@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/apologystake.json`.
  */
 export type Apologystake = {
-  address: "BEzAB38XypEyvKauzYz6CUKhigu3jgoFSzyLSW5ykUFJ";
+  address: "6W2YxRyMJoDEWWRsTmh8KdkAuz4AahY2WLMXh3ZEigBf";
   metadata: {
     name: "apologystake";
     version: "0.1.0";

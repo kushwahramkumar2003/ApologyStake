@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { WalletConnect } from "@/components/wallet-connect";
 import { Button } from "@/components/ui/button";
@@ -22,132 +23,149 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Menu, Shield } from "lucide-react";
-import { useScroll } from "framer-motion";
-import { useEffect, useState } from "react";
 
-const features = [
+import { Menu, Shield, PlusCircle } from "lucide-react";
+import { useWallet } from "@solana/wallet-adapter-react";
+
+const publicNavItems = [
   {
-    title: "Secure Staking",
-    href: "/#features",
-    description: "Lock SOL or NFTs as collateral for your commitment",
+    title: "Features",
+    items: [
+      {
+        title: "Secure Staking",
+        href: "/#features",
+        description: "Lock SOL or NFTs as collateral for your commitment",
+      },
+      {
+        title: "Smart Contracts",
+        href: "/#features",
+        description: "Automated and transparent probation tracking",
+      },
+      {
+        title: "Social Integration",
+        href: "/#features",
+        description: "Share your commitment journey on social media",
+      },
+    ],
   },
   {
-    title: "Smart Contracts",
-    href: "/#features",
-    description: "Automated and transparent probation tracking",
-  },
-  {
-    title: "Social Integration",
-    href: "/#features",
-    description: "Share your commitment journey on social media",
+    title: "Resources",
+    items: [
+      {
+        title: "Documentation",
+        href: "/docs",
+        description: "Learn how to use ApologyStake effectively",
+      },
+      {
+        title: "Blog",
+        href: "/blog",
+        description: "Latest updates and insights",
+      },
+      {
+        title: "FAQ",
+        href: "/#faq",
+        description: "Common questions answered",
+      },
+    ],
   },
 ];
 
-const resources = [
+const privateNavItems = [
   {
-    title: "Documentation",
-    href: "/docs",
-    description: "Learn how to use ApologyStake effectively",
+    title: "My Stakes",
+    href: "/dashboard",
   },
   {
-    title: "Blog",
-    href: "/blog",
-    description: "Latest updates and insights",
+    title: "Create New",
+    href: "/create",
   },
   {
-    title: "FAQ",
-    href: "/#faq",
-    description: "Common questions answered",
+    title: "History",
+    href: "/history",
   },
 ];
 
 export function SiteHeader() {
-  const { scrollY } = useScroll();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const { connected } = useWallet();
 
-  useEffect(() => {
-    return scrollY.onChange((latest) => {
-      setIsScrolled(latest > 0);
-    });
-  }, [scrollY]);
+  const isPrivateRoute = ["/dashboard", "/create", "/history"].some((route) =>
+    pathname.startsWith(route)
+  );
 
   return (
     <motion.header
-      className={cn(
-        "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        isScrolled && "shadow-sm"
-      )}
+      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center space-x-2">
-            <Shield className="h-6 w-6" />
+          <Link href="/" className="flex items-center space-x-2 group">
+            <Shield className="h-6 w-6 transition-transform group-hover:scale-110" />
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
               ApologyStake
             </span>
           </Link>
 
+          {/* Desktop Navigation */}
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Features</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {features.map((feature) => (
-                      <li key={feature.title}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={feature.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">
-                              {feature.title}
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {feature.description}
-                            </p>
-                          </Link>
+              {!isPrivateRoute && !connected && (
+                <>
+                  {publicNavItems.map((section) => (
+                    <NavigationMenuItem key={section.title}>
+                      <NavigationMenuTrigger>
+                        {section.title}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                          {section.items.map((item) => (
+                            <li key={item.title}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  href={item.href}
+                                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                >
+                                  <div className="text-sm font-medium leading-none">
+                                    {item.title}
+                                  </div>
+                                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                    {item.description}
+                                  </p>
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  ))}
+                </>
+              )}
+
+              {connected && (
+                <>
+                  {privateNavItems.map((item) => (
+                    <NavigationMenuItem key={item.title}>
+                      <Link href={item.href} legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={cn(
+                            navigationMenuTriggerStyle(),
+                            pathname === item.href && "text-primary bg-accent"
+                          )}
+                        >
+                          {item.title === "Create New" && (
+                            <PlusCircle className="w-4 h-4 mr-2 inline-block" />
+                          )}
+                          {item.title}
                         </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {resources.map((resource) => (
-                      <li key={resource.title}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={resource.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">
-                              {resource.title}
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {resource.description}
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/dashboard" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Dashboard
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+                      </Link>
+                    </NavigationMenuItem>
+                  ))}
+                </>
+              )}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -155,42 +173,69 @@ export function SiteHeader() {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <WalletConnect />
+
+          {/* Mobile Navigation */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                className="hover:bg-primary/10 transition-colors"
+              >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent
+              side="right"
+              className="w-[300px] sm:w-[400px] bg-background/95 backdrop-blur"
+            >
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-4 mt-4">
-                <Link
-                  href="/#features"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Features
-                </Link>
-                <Link
-                  href="/#how-it-works"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  How it Works
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/#faq"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  FAQ
-                </Link>
+                {!isPrivateRoute && !connected && (
+                  <>
+                    {publicNavItems.map((section) => (
+                      <div key={section.title} className="space-y-3">
+                        <h4 className="font-medium text-primary">
+                          {section.title}
+                        </h4>
+                        {section.items.map((item) => (
+                          <Link
+                            key={item.title}
+                            href={item.href}
+                            className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            {item.title}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {connected && (
+                  <>
+                    {privateNavItems.map((item) => (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center text-sm font-medium transition-colors hover:text-primary",
+                          pathname === item.href
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {item.title === "Create New" && (
+                          <PlusCircle className="w-4 h-4 mr-2" />
+                        )}
+                        {item.title}
+                      </Link>
+                    ))}
+                  </>
+                )}
               </nav>
             </SheetContent>
           </Sheet>

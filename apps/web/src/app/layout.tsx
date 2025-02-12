@@ -1,10 +1,12 @@
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
+import { Toaster as Toaster2 } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/Providers";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { SiteHeader } from "@/components/site-header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,8 +36,8 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          "w-full max-w-[2000px] mx-auto", // Responsive width with max-width
-          "px-4 sm:px-6 lg:px-8", // Responsive padding
+          "w-full max-w-[2000px] mx-auto",
+          "px-4 sm:px-6 lg:px-8",
           inter.className
         )}
       >
@@ -46,12 +48,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            <main className="flex-1 relative z-10">{children}</main>
-            <Toaster
-              richColors
-              position="top-center"
-              className="z-50" // Ensure toasts are always visible
-            />
+            <main className="flex-1 relative z-10">
+              <SiteHeader />
+              {children}
+            </main>
+            <Toaster2 />
+            <Toaster richColors position="top-center" className="z-50" />
           </Providers>
         </ThemeProvider>
       </body>

@@ -18,13 +18,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Wallet, Copy, LogOut, Check } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
-
+import { Wallet, Copy, LogOut, Check, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Improved type-safe truncate function
 const truncateAddress = (address: PublicKey | null): string => {
   if (!address) return "";
   const addressString = address.toBase58();
@@ -33,12 +29,11 @@ const truncateAddress = (address: PublicKey | null): string => {
 
 export function WalletConnect() {
   const { publicKey, disconnect, connected } = useWallet();
-
   const [isWalletDialogOpen, setIsWalletDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { toast } = useToast();
 
-  // Improved copy address handler
   const handleCopyAddress = useCallback(async () => {
     if (publicKey) {
       try {
@@ -47,6 +42,7 @@ export function WalletConnect() {
         toast({
           title: "Address copied",
           description: "Wallet address copied to clipboard",
+          className: "bg-background/95 backdrop-blur",
         });
         setTimeout(() => setIsCopied(false), 2000);
       } catch {
@@ -59,14 +55,14 @@ export function WalletConnect() {
     }
   }, [publicKey, toast]);
 
-  // Disconnect handler with error handling
   const handleDisconnect = useCallback(async () => {
     try {
       await disconnect();
-      // setBalance(null);
+      setDropdownOpen(false);
       toast({
         title: "Disconnected",
         description: "Wallet disconnected successfully",
+        className: "bg-background/95 backdrop-blur",
       });
     } catch {
       toast({
@@ -77,38 +73,78 @@ export function WalletConnect() {
     }
   }, [disconnect, toast]);
 
+  const handleExplorerLink = useCallback(() => {
+    if (publicKey) {
+      window.open(
+        `https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=devnet`,
+        "_blank"
+      );
+    }
+  }, [publicKey]);
+
+  const showMainnetInfo = () => {
+    toast({
+      title: "Mainnet Coming Soon",
+      description:
+        "We're currently running on Devnet. Mainnet support coming soon!",
+      className: "bg-background/95 backdrop-blur",
+    });
+  };
+
   return (
     <div className="flex items-center gap-2">
       {connected && (
-        <Badge variant="outline" className="hidden sm:flex">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={showMainnetInfo}
+          className="hidden sm:flex hover:bg-primary/10 animate-pulse bg-background/50 backdrop-blur-sm border-primary/20"
+        >
           Devnet
-        </Badge>
+        </Button>
       )}
 
-      <DropdownMenu>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button
             variant={connected ? "outline" : "default"}
-            className="min-w-[180px] justify-between"
+            className={`flex flex-row items-center justify-center transition-all duration-200 
+              ${connected ? "hover:bg-background/80 hover:border-primary/30" : "hover:bg-primary/90"}
+              ${dropdownOpen ? "ring-2 ring-primary/20" : ""}`}
             size="sm"
-            onClick={() => setIsWalletDialogOpen(true)}
+            onClick={() => !connected && setIsWalletDialogOpen(true)}
           >
-            <Wallet className="h-4 w-4" />
+            <Wallet
+              className={`h-4 w-4 ${connected ? "text-primary/80" : ""}`}
+            />
             {connected ? (
-              <span className="ml-2 truncate">
+              <span className="ml-2 truncate font-medium">
                 {truncateAddress(publicKey)}
               </span>
             ) : (
-              <span className="ml-2">Connect Wallet</span>
+              <span className="ml-2 font-medium">Connect Wallet</span>
             )}
           </Button>
         </DropdownMenuTrigger>
 
         {connected && (
-          <DropdownMenuContent className="w-64" align="end">
-            <DropdownMenuSeparator />
+          <DropdownMenuContent
+            align="end"
+            className="w-56 bg-background/95 backdrop-blur-lg border border-primary/20 shadow-lg rounded-lg animate-in fade-in-0 zoom-in-95"
+          >
+            <div className="px-2 pt-2 pb-1">
+              <p className="text-xs text-muted-foreground">Connected wallet</p>
+              <p className="text-sm font-medium truncate">
+                {publicKey?.toBase58()}
+              </p>
+            </div>
 
-            <DropdownMenuItem onClick={handleCopyAddress} className="gap-2">
+            <DropdownMenuSeparator className="bg-primary/10" />
+
+            <DropdownMenuItem
+              onClick={handleCopyAddress}
+              className="gap-2 focus:bg-primary/10 cursor-pointer"
+            >
               {isCopied ? (
                 <Check className="h-4 w-4 text-green-500" />
               ) : (
@@ -117,11 +153,19 @@ export function WalletConnect() {
               <span>{isCopied ? "Copied!" : "Copy Address"}</span>
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleExplorerLink}
+              className="gap-2 focus:bg-primary/10 cursor-pointer"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span>View on Explorer</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator className="bg-primary/10" />
 
             <DropdownMenuItem
               onClick={handleDisconnect}
-              className="gap-2 text-destructive focus:text-destructive"
+              className="gap-2 text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
               <span>Disconnect</span>
@@ -131,9 +175,9 @@ export function WalletConnect() {
       </DropdownMenu>
 
       <Dialog open={isWalletDialogOpen} onOpenChange={setIsWalletDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-lg border-primary/20">
           <DialogHeader>
-            <DialogTitle className="text-center">
+            <DialogTitle className="text-center font-semibold">
               {connected ? "Change Wallet" : "Connect Wallet"}
             </DialogTitle>
           </DialogHeader>
@@ -143,6 +187,7 @@ export function WalletConnect() {
             <Button
               variant="outline"
               onClick={() => setIsWalletDialogOpen(false)}
+              className="hover:bg-primary/10 hover:border-primary/30 transition-colors"
             >
               Cancel
             </Button>

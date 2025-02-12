@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
   Card,
@@ -88,8 +87,6 @@ const howItWorks = [
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative min-h-[80vh] overflow-hidden flex items-center">
