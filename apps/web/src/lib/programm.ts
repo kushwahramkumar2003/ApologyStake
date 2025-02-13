@@ -9,7 +9,6 @@ import {
 import { IDL } from "./idl";
 import { Apologystake } from "@/program/aplogystack";
 
-// Program constants
 export const PROGRAM_ID = new PublicKey(
   "BEzAB38XypEyvKauzYz6CUKhigu3jgoFSzyLSW5ykUFJ"
 );
@@ -17,7 +16,6 @@ export const MAX_MESSAGE_LENGTH = 200;
 export const MIN_PROBATION_DAYS = 1;
 export const MAX_PROBATION_DAYS = 365;
 
-// Custom error types for better error handling
 export class ApologyError extends Error {
   constructor(
     message: string,
@@ -28,7 +26,6 @@ export class ApologyError extends Error {
   }
 }
 
-// Define types for clarity
 export interface ApologyParams {
   victim: PublicKey;
   probationDays: number;
@@ -199,15 +196,12 @@ export class ApologyStakeProgram {
         );
       }
 
-      // Verify not apologizing to self
       if (offender.equals(params.victim)) {
         throw new ApologyError("Cannot apologize to self", "SELF_APOLOGY");
       }
 
-      // Generate unique nonce
       const nonce = await this.generateUniqueNonce(offender, params.victim);
 
-      // Find PDAs
       const [apologyPDA] = await this.findApologyPDA(
         offender,
         params.victim,
@@ -215,7 +209,6 @@ export class ApologyStakeProgram {
       );
       const [vaultPDA] = await this.findVaultPDA(apologyPDA);
 
-      // Check wallet balance
       const balance = await this.connection.getBalance(offender);
       if (balance < params.stakeAmount) {
         throw new ApologyError(
@@ -224,7 +217,6 @@ export class ApologyStakeProgram {
         );
       }
 
-      // Create the apology
       const tx = await this.program.methods
         .initializeApology(
           new anchor.BN(params.probationDays),

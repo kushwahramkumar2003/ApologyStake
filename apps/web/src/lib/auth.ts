@@ -34,12 +34,10 @@ export const authOptions: NextAuthOptions = {
 
           const { publicKey, signature, nonce } = parsedData.data;
 
-          // Message that was signed
           const message = new TextEncoder().encode(
             `Sign this message to authenticate with ApologyStake\nNonce: ${nonce}`
           );
 
-          // Verify signature
           const signatureUint8 = bs58.decode(signature);
           const publicKeyBytes = new PublicKey(publicKey).toBytes();
 

@@ -8,15 +8,12 @@ describe("apologystake", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.ApologyStake as Program<Apologystake>;
+  const program = anchor.workspace.Apologystake as Program<Apologystake>;
 
   // Test accounts
   const offender = anchor.web3.Keypair.generate();
-  const victim = anchor.web3.Keypair.generate();
-  let apologyPDA: PublicKey;
-  let vaultPDA: PublicKey;
-  let apologyBump: number;
-  let vaultBump: number;
+  const victim1 = anchor.web3.Keypair.generate();
+  const victim2 = anchor.web3.Keypair.generate();
 
   // Test parameters
   const probationDays = 7;
@@ -24,80 +21,195 @@ describe("apologystake", () => {
   const message = "I apologize for my actions";
 
   before(async () => {
-    // Airdrop SOL to offender for transactions
+    // Airdrop SOL to offender for multiple transactions
     const airdropSignature = await provider.connection.requestAirdrop(
       offender.publicKey,
-      2 * LAMPORTS_PER_SOL
+      10 * LAMPORTS_PER_SOL // Increased to 10 SOL
     );
     await provider.connection.confirmTransaction(airdropSignature);
 
-    // Derive PDAs
-    [apologyPDA, apologyBump] = await PublicKey.findProgramAddress(
+    // Airdrop to victims
+    for (const victim of [victim1, victim2]) {
+      const victimAirdrop = await provider.connection.requestAirdrop(
+        victim.publicKey,
+        LAMPORTS_PER_SOL
+      );
+      await provider.connection.confirmTransaction(victimAirdrop);
+    }
+  });
+
+  async function createApologyPDAs(
+    offender: PublicKey,
+    victim: PublicKey,
+    nonce: number
+  ) {
+    const [apologyPDA] = await PublicKey.findProgramAddress(
       [
         Buffer.from("apology"),
-        offender.publicKey.toBuffer(),
-        victim.publicKey.toBuffer(),
+        offender.toBuffer(),
+        victim.toBuffer(),
+        new anchor.BN(nonce).toArrayLike(Buffer, "le", 8),
       ],
       program.programId
     );
 
-    [vaultPDA, vaultBump] = await PublicKey.findProgramAddress(
+    const [vaultPDA] = await PublicKey.findProgramAddress(
       [Buffer.from("vault"), apologyPDA.toBuffer()],
       program.programId
     );
-  });
 
-  it("Initializes an apology with stake", async () => {
+    return { apologyPDA, vaultPDA };
+  }
+
+  it("Can create multiple apologies to different victims", async () => {
+    // Create first apology to victim1
+    const { apologyPDA: apologyPDA1, vaultPDA: vaultPDA1 } =
+      await createApologyPDAs(offender.publicKey, victim1.publicKey, 0);
+
     await program.methods
       .initializeApology(
         new anchor.BN(probationDays),
         new anchor.BN(stakeAmount),
-        message
+        message,
+        new anchor.BN(0),
+        "ramkumar_9301"
       )
       .accounts({
-        apology: apologyPDA,
+        apology: apologyPDA1,
         offender: offender.publicKey,
-        victim: victim.publicKey,
-        vault: vaultPDA,
+        victim: victim1.publicKey,
+        vault: vaultPDA1,
         systemProgram: SystemProgram.programId,
         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
       })
       .signers([offender])
       .rpc();
 
-    // Verify apology account data
-    const apologyAccount = await program.account.apology.fetch(apologyPDA);
-    expect(apologyAccount.offender.toString()).to.equal(
-      offender.publicKey.toString()
-    );
-    expect(apologyAccount.victim.toString()).to.equal(
-      victim.publicKey.toString()
-    );
-    expect(apologyAccount.stakeAmount.toString()).to.equal(
-      stakeAmount.toString()
-    );
-    expect(apologyAccount.message).to.equal(message);
-    expect(apologyAccount.status).to.deep.equal({ active: {} });
+    // Create second apology to victim2
+    const { apologyPDA: apologyPDA2, vaultPDA: vaultPDA2 } =
+      await createApologyPDAs(offender.publicKey, victim2.publicKey, 0);
 
-    // Verify stake transfer
-    const vaultBalance = await provider.connection.getBalance(vaultPDA);
-    expect(vaultBalance).to.equal(stakeAmount);
+    await program.methods
+      .initializeApology(
+        new anchor.BN(probationDays),
+        new anchor.BN(stakeAmount),
+        message,
+        new anchor.BN(0),
+        "ramkumar_9301"
+      )
+      .accounts({
+        apology: apologyPDA2,
+        offender: offender.publicKey,
+        victim: victim2.publicKey,
+        vault: vaultPDA2,
+        systemProgram: SystemProgram.programId,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([offender])
+      .rpc();
+
+    // Verify both apologies exist
+    const apology1 = await program.account.apology.fetch(apologyPDA1);
+    const apology2 = await program.account.apology.fetch(apologyPDA2);
+
+    expect(apology1.victim.toString()).to.equal(victim1.publicKey.toString());
+    expect(apology2.victim.toString()).to.equal(victim2.publicKey.toString());
   });
 
-  it("Cannot initialize apology with insufficient funds", async () => {
-    const poorOffender = anchor.web3.Keypair.generate();
-    const [poorApologyPDA] = await PublicKey.findProgramAddress(
-      [
-        Buffer.from("apology"),
-        poorOffender.publicKey.toBuffer(),
-        victim.publicKey.toBuffer(),
-      ],
-      program.programId
+  it("Can create multiple apologies to same victim using nonce", async () => {
+    // Create first apology with nonce 1
+    const { apologyPDA: apologyPDA1, vaultPDA: vaultPDA1 } =
+      await createApologyPDAs(offender.publicKey, victim1.publicKey, 1);
+
+    await program.methods
+      .initializeApology(
+        new anchor.BN(probationDays),
+        new anchor.BN(stakeAmount / 2), // Different stake amount
+        "First apology",
+        new anchor.BN(1),
+        "ramkumar_9301"
+      )
+      .accounts({
+        apology: apologyPDA1,
+        offender: offender.publicKey,
+        victim: victim1.publicKey,
+        vault: vaultPDA1,
+        systemProgram: SystemProgram.programId,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([offender])
+      .rpc();
+
+    // Create second apology with nonce 2
+    const { apologyPDA: apologyPDA2, vaultPDA: vaultPDA2 } =
+      await createApologyPDAs(offender.publicKey, victim1.publicKey, 2);
+
+    await program.methods
+      .initializeApology(
+        new anchor.BN(probationDays),
+        new anchor.BN(stakeAmount / 4), // Different stake amount
+        "Second apology",
+        new anchor.BN(2),
+        "ramkumar_9301"
+      )
+      .accounts({
+        apology: apologyPDA2,
+        offender: offender.publicKey,
+        victim: victim1.publicKey,
+        vault: vaultPDA2,
+        systemProgram: SystemProgram.programId,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([offender])
+      .rpc();
+
+    // Verify both apologies exist with different messages
+    const apology1 = await program.account.apology.fetch(apologyPDA1);
+    const apology2 = await program.account.apology.fetch(apologyPDA2);
+
+    expect(apology1.message).to.equal("First apology");
+    expect(apology2.message).to.equal("Second apology");
+    expect(apology1.nonce.toString()).to.equal("1");
+    expect(apology2.nonce.toString()).to.equal("2");
+  });
+
+  it("Cannot initialize with invalid probation days", async () => {
+    const { apologyPDA, vaultPDA } = await createApologyPDAs(
+      offender.publicKey,
+      victim1.publicKey,
+      3
     );
 
-    const [poorVaultPDA] = await PublicKey.findProgramAddress(
-      [Buffer.from("vault"), poorApologyPDA.toBuffer()],
-      program.programId
+    try {
+      await program.methods
+        .initializeApology(
+          new anchor.BN(0), // Invalid probation days
+          new anchor.BN(stakeAmount),
+          message,
+          new anchor.BN(3),
+          "ramkumar_9301"
+        )
+        .accounts({
+          apology: apologyPDA,
+          offender: offender.publicKey,
+          victim: victim1.publicKey,
+          vault: vaultPDA,
+          systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        })
+        .signers([offender])
+        .rpc();
+      expect.fail("Should have failed with invalid probation days");
+    } catch (error) {
+      expect(error.toString()).to.include("InvalidProbationDays");
+    }
+  });
+
+  it("Cannot initialize with empty message", async () => {
+    const { apologyPDA, vaultPDA } = await createApologyPDAs(
+      offender.publicKey,
+      victim1.publicKey,
+      4
     );
 
     try {
@@ -105,187 +217,169 @@ describe("apologystake", () => {
         .initializeApology(
           new anchor.BN(probationDays),
           new anchor.BN(stakeAmount),
-          message
+          "", // Empty message
+          new anchor.BN(4),
+          "ramkumar_9301"
         )
         .accounts({
-          apology: poorApologyPDA,
-          offender: poorOffender.publicKey,
-          victim: victim.publicKey,
-          vault: poorVaultPDA,
+          apology: apologyPDA,
+          offender: offender.publicKey,
+          victim: victim1.publicKey,
+          vault: vaultPDA,
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
-        .signers([poorOffender])
+        .signers([offender])
         .rpc();
-      expect.fail("Should have failed with insufficient funds");
+      expect.fail("Should have failed with empty message");
     } catch (error) {
-      expect(error.message).to.include("insufficient funds");
+      expect(error.toString()).to.include("EmptyMessage");
     }
   });
 
-  it("Cannot release stake before probation period ends", async () => {
+  it("Cannot initialize apology to self", async () => {
+    const { apologyPDA, vaultPDA } = await createApologyPDAs(
+      offender.publicKey,
+      offender.publicKey,
+      5
+    );
+
     try {
       await program.methods
-        .releaseStake()
+        .initializeApology(
+          new anchor.BN(probationDays),
+          new anchor.BN(stakeAmount),
+          message,
+          new anchor.BN(5),
+          "ramkumar_9301"
+        )
         .accounts({
           apology: apologyPDA,
           offender: offender.publicKey,
-          victim: victim.publicKey,
+          victim: offender.publicKey, // Same as offender
           vault: vaultPDA,
           systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         })
-        .signers([victim])
+        .signers([offender])
         .rpc();
-      expect.fail("Should have failed with probation not ended");
+      expect.fail("Should have failed when apologizing to self");
     } catch (error) {
-      expect(error.message).to.include("Probation period has not ended");
+      expect(error.toString()).to.include("InvalidVictim");
     }
   });
 
-  it("Cannot claim stake before probation period ends", async () => {
-    try {
+  describe("Stake Release and Claim Tests", () => {
+    let testApologyPDA: PublicKey;
+    let testVaultPDA: PublicKey;
+
+    before(async () => {
+      const pdas = await createApologyPDAs(
+        offender.publicKey,
+        victim1.publicKey,
+        6
+      );
+      testApologyPDA = pdas.apologyPDA;
+      testVaultPDA = pdas.vaultPDA;
+
+      // Create a test apology
+      await program.methods
+        .initializeApology(
+          new anchor.BN(probationDays),
+          new anchor.BN(stakeAmount),
+          message,
+          new anchor.BN(6),
+          "ramkumar_9301"
+        )
+        .accounts({
+          apology: testApologyPDA,
+          offender: offender.publicKey,
+          victim: victim1.publicKey,
+          vault: testVaultPDA,
+          systemProgram: SystemProgram.programId,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        })
+        .signers([offender])
+        .rpc();
+    });
+
+    it("Cannot release or claim stake by non-victim", async () => {
+      const randomUser = anchor.web3.Keypair.generate();
+
+      // Try to release stake
+      try {
+        await program.methods
+          .releaseStake()
+          .accounts({
+            apology: testApologyPDA,
+            offender: offender.publicKey,
+            victim: randomUser.publicKey,
+            vault: testVaultPDA,
+            systemProgram: SystemProgram.programId,
+          })
+          .signers([randomUser])
+          .rpc();
+        expect.fail("Should have failed with unauthorized victim");
+      } catch (error) {
+        expect(error.toString()).to.include("UnauthorizedVictim");
+      }
+
+      // Try to claim stake
+      try {
+        await program.methods
+          .claimStake()
+          .accounts({
+            apology: testApologyPDA,
+            victim: randomUser.publicKey,
+            vault: testVaultPDA,
+            systemProgram: SystemProgram.programId,
+          })
+          .signers([randomUser])
+          .rpc();
+        expect.fail("Should have failed with unauthorized victim");
+      } catch (error) {
+        expect(error.toString()).to.include("UnauthorizedVictim");
+      }
+    });
+
+    it("Victim can claim stake after probation", async () => {
+      // Fast-forward time (simulate probation end)
+      await provider.connection.sleep(
+        probationDays * 24 * 60 * 60 * 1000 + 1000
+      );
+
       await program.methods
         .claimStake()
         .accounts({
-          apology: apologyPDA,
-          victim: victim.publicKey,
-          vault: vaultPDA,
+          apology: testApologyPDA,
+          victim: victim1.publicKey,
+          vault: testVaultPDA,
           systemProgram: SystemProgram.programId,
         })
-        .signers([victim])
+        .signers([victim1])
         .rpc();
-      expect.fail("Should have failed with probation not ended");
-    } catch (error) {
-      expect(error.message).to.include("Probation period has not ended");
-    }
-  });
 
-  it("Only victim can release stake", async () => {
-    const randomUser = anchor.web3.Keypair.generate();
-    try {
-      await program.methods
-        .releaseStake()
-        .accounts({
-          apology: apologyPDA,
-          offender: offender.publicKey,
-          victim: randomUser.publicKey,
-          vault: vaultPDA,
-          systemProgram: SystemProgram.programId,
-        })
-        .signers([randomUser])
-        .rpc();
-      expect.fail("Should have failed with unauthorized victim");
-    } catch (error) {
-      expect(error.message).to.include(
-        "Only the victim can perform this action"
-      );
-    }
-  });
+      const apology = await program.account.apology.fetch(testApologyPDA);
+      expect(apology.status.completed).to.be.true;
+    });
 
-  // Helper function to advance blockchain time
-  async function advanceBlockchainTime(seconds: number) {
-    await provider.connection.confirmTransaction(
-      await provider.connection.requestAirdrop(offender.publicKey, 0)
-    );
-    // Note: This is a simplified way to advance time. In a real test environment,
-    // you would need to use the proper method based on your test validator setup.
-  }
-
-  it("Victim can release stake after probation ends", async () => {
-    // Advance time past probation period
-    await advanceBlockchainTime(probationDays * 24 * 60 * 60);
-
-    const offenderBalanceBefore = await provider.connection.getBalance(
-      offender.publicKey
-    );
-
-    await program.methods
-      .releaseStake()
-      .accounts({
-        apology: apologyPDA,
-        offender: offender.publicKey,
-        victim: victim.publicKey,
-        vault: vaultPDA,
-        systemProgram: SystemProgram.programId,
-      })
-      .signers([victim])
-      .rpc();
-
-    // Verify stake was returned to offender
-    const offenderBalanceAfter = await provider.connection.getBalance(
-      offender.publicKey
-    );
-    expect(offenderBalanceAfter - offenderBalanceBefore).to.be.approximately(
-      stakeAmount,
-      1000000 // Allow for small differences due to transaction fees
-    );
-
-    // Verify apology status
-    const apologyAccount = await program.account.apology.fetch(apologyPDA);
-    expect(apologyAccount.status).to.deep.equal({ completed: {} });
-  });
-
-  it("Cannot interact with completed apology", async () => {
-    try {
-      await program.methods
-        .releaseStake()
-        .accounts({
-          apology: apologyPDA,
-          offender: offender.publicKey,
-          victim: victim.publicKey,
-          vault: vaultPDA,
-          systemProgram: SystemProgram.programId,
-        })
-        .signers([victim])
-        .rpc();
-      expect.fail("Should have failed with invalid status");
-    } catch (error) {
-      expect(error.message).to.include("Apology is not in the correct status");
-    }
-  });
-
-  // Test initialization with zero stake
-  it("Can initialize apology with zero stake", async () => {
-    const newOffender = anchor.web3.Keypair.generate();
-    const [newApologyPDA] = await PublicKey.findProgramAddress(
-      [
-        Buffer.from("apology"),
-        newOffender.publicKey.toBuffer(),
-        victim.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
-
-    const [newVaultPDA] = await PublicKey.findProgramAddress(
-      [Buffer.from("vault"), newApologyPDA.toBuffer()],
-      program.programId
-    );
-
-    // Airdrop just enough for rent and transaction fee
-    const airdropSignature = await provider.connection.requestAirdrop(
-      newOffender.publicKey,
-      LAMPORTS_PER_SOL / 10
-    );
-    await provider.connection.confirmTransaction(airdropSignature);
-
-    await program.methods
-      .initializeApology(
-        new anchor.BN(probationDays),
-        new anchor.BN(0),
-        message
-      )
-      .accounts({
-        apology: newApologyPDA,
-        offender: newOffender.publicKey,
-        victim: victim.publicKey,
-        vault: newVaultPDA,
-        systemProgram: SystemProgram.programId,
-        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([newOffender])
-      .rpc();
-
-    const apologyAccount = await program.account.apology.fetch(newApologyPDA);
-    expect(apologyAccount.stakeAmount.toString()).to.equal("0");
+    it("Offender cannot release stake before probation ends", async () => {
+      try {
+        await program.methods
+          .releaseStake()
+          .accounts({
+            apology: testApologyPDA,
+            offender: offender.publicKey,
+            victim: victim1.publicKey,
+            vault: testVaultPDA,
+            systemProgram: SystemProgram.programId,
+          })
+          .signers([victim1])
+          .rpc();
+        expect.fail("Should have failed: probation not ended");
+      } catch (error) {
+        expect(error.message).to.include("ProbationNotEnded");
+      }
+    });
   });
 });

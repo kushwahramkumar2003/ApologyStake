@@ -9,10 +9,28 @@ export const IDL = {
   instructions: [
     {
       name: "claim_stake",
+      docs: [
+        "Allows victim to claim the staked SOL",
+        "",
+        "Can only be called by the victim after probation period ends.",
+        "Represents enforcement of consequences for the offense.",
+        "",
+        "# Arguments",
+        "* `ctx` - Context containing all required accounts",
+        "",
+        "# Returns",
+        "* `Result<()>` - Success or error result",
+        "",
+        "# Errors",
+        "- `InvalidStatus` if apology not active",
+        "- `ProbationNotEnded` if called too early",
+        "- `UnauthorizedVictim` if caller not victim",
+      ],
       discriminator: [62, 145, 133, 242, 244, 59, 53, 139],
       accounts: [
         {
           name: "apology",
+          docs: ["The apology account containing stake details"],
           writable: true,
           pda: {
             seeds: [
@@ -35,11 +53,13 @@ export const IDL = {
         },
         {
           name: "victim",
+          docs: ["The victim must sign to claim stake"],
           writable: true,
           signer: true,
         },
         {
           name: "vault",
+          docs: ["Vault holding the staked SOL"],
           writable: true,
           pda: {
             seeds: [
@@ -56,6 +76,7 @@ export const IDL = {
         },
         {
           name: "system_program",
+          docs: ["Required for transfer operations"],
           address: "11111111111111111111111111111111",
         },
       ],
@@ -63,10 +84,33 @@ export const IDL = {
     },
     {
       name: "initialize_apology",
+      docs: [
+        "Creates a new apology with an optional SOL stake",
+        "",
+        "# Arguments",
+        "* `ctx` - Context containing all required accounts",
+        "* `probation_days` - Duration of probation period in days",
+        "* `stake_amount` - Amount of SOL to stake (in lamports)",
+        "* `message` - The apology message text",
+        "* `nonce` - Unique identifier for this apology",
+        "* `twitter` - Victim's Twitter handle for public reference",
+        "",
+        "# Returns",
+        "* `Result<()>` - Success or error result",
+        "",
+        "# Errors",
+        "- `InvalidProbationDays` if probation days is zero",
+        "- `EmptyMessage` if message is empty",
+        "- `InvalidVictim` if offender and victim are same",
+      ],
       discriminator: [103, 23, 194, 31, 215, 134, 15, 230],
       accounts: [
         {
           name: "apology",
+          docs: [
+            "The apology account to be created",
+            "PDA derived from offender, victim, and nonce",
+          ],
           writable: true,
           pda: {
             seeds: [
@@ -91,14 +135,19 @@ export const IDL = {
         },
         {
           name: "offender",
+          docs: [
+            "The account making the apology and paying for account creation",
+          ],
           writable: true,
           signer: true,
         },
         {
           name: "victim",
+          docs: ["The account receiving the apology"],
         },
         {
           name: "vault",
+          docs: ["Vault account to hold staked SOL"],
           writable: true,
           pda: {
             seeds: [
@@ -115,10 +164,12 @@ export const IDL = {
         },
         {
           name: "system_program",
+          docs: ["Required for system operations"],
           address: "11111111111111111111111111111111",
         },
         {
           name: "rent",
+          docs: ["Required for rent calculations"],
           address: "SysvarRent111111111111111111111111111111111",
         },
       ],
@@ -147,10 +198,28 @@ export const IDL = {
     },
     {
       name: "release_stake",
+      docs: [
+        "Releases staked SOL back to the offender",
+        "",
+        "Can only be called by the victim after probation period ends.",
+        "Represents forgiveness/acceptance of the apology.",
+        "",
+        "# Arguments",
+        "* `ctx` - Context containing all required accounts",
+        "",
+        "# Returns",
+        "* `Result<()>` - Success or error result",
+        "",
+        "# Errors",
+        "- `InvalidStatus` if apology not active",
+        "- `ProbationNotEnded` if called too early",
+        "- `UnauthorizedVictim` if caller not victim",
+      ],
       discriminator: [51, 5, 28, 250, 185, 168, 18, 53],
       accounts: [
         {
           name: "apology",
+          docs: ["The apology account containing stake details"],
           writable: true,
           pda: {
             seeds: [
@@ -173,15 +242,18 @@ export const IDL = {
         },
         {
           name: "offender",
+          docs: ["The original offender's account to receive returned stake"],
           writable: true,
         },
         {
           name: "victim",
+          docs: ["The victim must sign to release stake"],
           writable: true,
           signer: true,
         },
         {
           name: "vault",
+          docs: ["Vault holding the staked SOL"],
           writable: true,
           pda: {
             seeds: [
@@ -198,6 +270,7 @@ export const IDL = {
         },
         {
           name: "system_program",
+          docs: ["Required for transfer operations"],
           address: "11111111111111111111111111111111",
         },
       ],
@@ -251,39 +324,57 @@ export const IDL = {
       name: "InvalidVictim",
       msg: "Cannot apologize to self",
     },
+    {
+      code: 6006,
+      name: "InsufficientFunds",
+      msg: "Insufficient funds to stake",
+    },
+    {
+      code: 6007,
+      name: "InvalidStakeAmount",
+      msg: "Stake amount must be greater than 0",
+    },
   ],
   types: [
     {
       name: "Apology",
+      docs: ["Main account structure storing apology data"],
       type: {
         kind: "struct",
         fields: [
           {
             name: "offender",
+            docs: ["Public key of the apologizing party"],
             type: "pubkey",
           },
           {
             name: "victim",
+            docs: ["Public key of the party receiving the apology"],
             type: "pubkey",
           },
           {
             name: "nonce",
+            docs: ["Unique identifier for this apology"],
             type: "i64",
           },
           {
             name: "stake_amount",
+            docs: ["Amount of SOL staked in lamports"],
             type: "u64",
           },
           {
             name: "probation_end",
+            docs: ["Unix timestamp when probation period ends"],
             type: "i64",
           },
           {
             name: "created_at",
+            docs: ["Unix timestamp when apology was created"],
             type: "i64",
           },
           {
             name: "status",
+            docs: ["Current status of the apology"],
             type: {
               defined: {
                 name: "ApologyStatus",
@@ -292,10 +383,12 @@ export const IDL = {
           },
           {
             name: "message",
+            docs: ["The apology message text"],
             type: "string",
           },
           {
             name: "twitter",
+            docs: ["Victim's Twitter handle"],
             type: "string",
           },
         ],
@@ -303,15 +396,18 @@ export const IDL = {
     },
     {
       name: "ApologyCompleted",
+      docs: ["Event emitted when apology is completed"],
       type: {
         kind: "struct",
         fields: [
           {
             name: "apology_id",
+            docs: ["Public key of the apology account"],
             type: "pubkey",
           },
           {
             name: "resolution",
+            docs: ["How the apology was resolved"],
             type: {
               defined: {
                 name: "ApologyResolution",
@@ -323,31 +419,38 @@ export const IDL = {
     },
     {
       name: "ApologyCreated",
+      docs: ["Event emitted when new apology is created"],
       type: {
         kind: "struct",
         fields: [
           {
             name: "apology_id",
+            docs: ["Public key of the apology account"],
             type: "pubkey",
           },
           {
             name: "offender",
+            docs: ["Public key of the apologizing party"],
             type: "pubkey",
           },
           {
             name: "victim",
+            docs: ["Public key of the party receiving apology"],
             type: "pubkey",
           },
           {
             name: "stake_amount",
+            docs: ["Amount of SOL staked in lamports"],
             type: "u64",
           },
           {
             name: "probation_days",
+            docs: ["Length of probation in days"],
             type: "u64",
           },
           {
             name: "twitter",
+            docs: ["Victim's Twitter handle"],
             type: "string",
           },
         ],
@@ -355,6 +458,7 @@ export const IDL = {
     },
     {
       name: "ApologyResolution",
+      docs: ["How an apology was resolved"],
       type: {
         kind: "enum",
         variants: [
@@ -369,6 +473,7 @@ export const IDL = {
     },
     {
       name: "ApologyStatus",
+      docs: ["Status of an apology"],
       type: {
         kind: "enum",
         variants: [

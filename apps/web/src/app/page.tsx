@@ -538,6 +538,34 @@ export default function Home() {
           </div>
         </section>
 
+        {/* CTA Section */}
+        <section className="container py-16 md:py-24 lg:py-32 px-4">
+          <motion.div
+            className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Ready to Make Things Right?
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg md:text-xl">
+              Start your journey towards meaningful reconciliation today.
+            </p>
+            <Button
+              size="lg"
+              className="rounded-full text-base h-12 px-6 hover:scale-105 transition-transform"
+              asChild
+            >
+              <Link href="/create">
+                Create Your First Apology{" "}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </motion.div>
+        </section>
+
         {/* FAQ Section */}
         <section id="faq" className="border-t border-primary/10 ">
           <div className="container py-16 md:py-24 lg:py-32 px-4">
@@ -592,34 +620,6 @@ export default function Home() {
               </Accordion>
             </div>
           </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="container py-16 md:py-24 lg:py-32 px-4">
-          <motion.div
-            className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Ready to Make Things Right?
-            </h2>
-            <p className="text-muted-foreground text-base sm:text-lg md:text-xl">
-              Start your journey towards meaningful reconciliation today.
-            </p>
-            <Button
-              size="lg"
-              className="rounded-full text-base h-12 px-6 hover:scale-105 transition-transform"
-              asChild
-            >
-              <Link href="/create">
-                Create Your First Apology{" "}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </motion.div>
         </section>
       </main>
 
