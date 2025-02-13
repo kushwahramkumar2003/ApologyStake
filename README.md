@@ -1,338 +1,205 @@
-# ApologyStake : Tokenized Apology Protocol (TAP) - Technical Specification
+# 🤝 ApologyStake: On-Chain Accountability Protocol
 
-## Table of Contents
+![ApologyStake Banner](https://placehold.co/1200x400?text=ApologyStake:+The+Future+of+Social+Accountability)
 
-1. [Core Features](#core-features)
-2. [System Components](#system-components)
-3. [Smart Contract Functions](#smart-contract-functions)
-4. [Frontend Pages & Components](#frontend-pages--components)
-5. [Backend API Endpoints](#backend-api-endpoints)
-6. [Social Media Integration Details](#social-media-integration-details)
-7. [Data Models](#data-models)
-8. [Sequence Diagrams](#sequence-diagrams)
-9. [Error Handling](#error-handling)
-10. [Audit & Monitoring](#audit--monitoring)
+[![Solana](https://img.shields.io/badge/Solana-black?style=for-the-badge&logo=solana)](https://solana.com/)
+[![Anchor](https://img.shields.io/badge/Anchor-black?style=for-the-badge&logo=anchor)](https://www.anchor-lang.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-blue?style=for-the-badge)](https://apology-stake.vercel.app/)
 
-## Core Features
+> Making apologies meaningful through blockchain accountability and NFT proof-of-commitment
 
-### 1. Apology Creation & Staking
+## 🎯 Overview
 
-#### Offender Flow:
+ApologyStake revolutionizes personal accountability by bringing the power of blockchain to interpersonal conflict resolution. Through a unique combination of financial stakes, NFT minting, and public commitments, we create a mechanism for meaningful apologies backed by tangible proof and consequences.
 
-- Connect Phantom Wallet
-- Input Fields:
-  - Victim's Wallet Address
-  - Probation Period (7/30/90 days)
-  - Stake Type (SOL or NFT)
-  - Apology Message (text/JSON metadata)
-- Sign Transaction:
-  - SOL: Transfer to PDA Escrow
-  - NFT: Transfer to PDA via SPL Token Program
-- Mint Apology NFT:
-  - Metadata stored on IPFS (using NFT.Storage)
-  - NFT contains:
-    - Original apology text
-    - Stake details
-    - Contract address
+## 💫 Protocol Features
 
-### 2. Victim Resolution Workflow
+### Core Mechanics
 
-#### Actions:
+- 🔒 Stake SOL as commitment collateral
+- 🎨 Automatic NFT minting as proof of apology
+- ⏳ Customizable probation periods
+- 🤝 Victim-controlled resolution system
+- 📜 On-chain verification of commitments
+- 🌐 Public accountability tracking
 
-- `Release Stake`: Return funds to offender after probation
-- `Claim Stake`: Take ownership of staked assets
+### NFT Integration
 
-#### Conditions:
+- **Proof of Apology NFT**: Automatically minted upon staking
+- **Dynamic Metadata**: Reflects apology status and stake details
+- **IPFS Storage**: Permanent, decentralized record keeping
+- **Transferable Proof**: Can be shared or displayed as accountability record
 
-- Victim must sign transaction
-- Probation period must have elapsed (checked via Solana Clock)
-- Contract must be in `ACTIVE` state
+## 🔄 Protocol Workflow
 
-### 3. Social Accountability
+1. **Apology Initiation**
 
-#### Tokenized Apology NFT:
+   - Connect wallet
+   - Specify victim's address
+   - Set stake amount in SOL
+   - Write apology message
+   - Define probation period
 
-- Embedded "View Apology" link
-- Verifiable on Solana explorers
-- Auto-post to Twitter via API (opt-in)
+2. **Stake & NFT Creation**
 
-#### Reputation Tracker:
+   - SOL is staked in protocol vault
+   - Proof of Apology NFT is automatically minted
+   - NFT metadata includes:
+     - Stake amount
+     - Probation period
+     - Apology message
+     - Timestamp
+     - Status (Active/Completed)
 
-- Public dashboard showing:
-  - Total apologies created
-  - Success/failure rate
-  - Historical stakes
+3. **Probation Period**
 
-## System Components
+   - Stake remains locked
+   - NFT status shows "Active"
+   - Progress tracker visible to both parties
 
-### 1. Solana Program (Anchor)
+4. **Resolution Phase**
+   - Victim can choose to:
+     - Release stake (Forgiveness)
+     - Claim stake (Consequence)
+   - NFT status updates to "Completed"
+   - Resolution is recorded on-chain
 
-| Component        | Description                                   |
-| ---------------- | --------------------------------------------- |
-| `ApologyAccount` | PDA storing apology state (8 bytes + dynamic) |
-| `Escrow`         | PDA holding SOL/NFTs (owned by program)       |
-| `Error Codes`    | Custom errors (e.g., `ProbationNotOver`)      |
+## 🛠️ Technical Architecture
 
-### 2. Frontend (Next.js)
+### Built With
 
-| Page            | Components                                    |
-| --------------- | --------------------------------------------- |
-| `/create`       | Wallet connector, stake form, NFT preview     |
-| `/dashboard`    | Active apologies table, filter by status      |
-| `/apology/[id]` | Apology details, countdown timer, action CTAs |
-| `/twitter-auth` | OAuth 2.0 flow for Twitter integration        |
+- **Blockchain**: Solana
+- **Smart Contracts**: Anchor Framework (Rust)
+- **Frontend**: Next.js 14, TailwindCSS
+- **Authentication**: NextAuth.js
+- **NFT Storage**: IPFS
+- **Development**: TypeScript
 
-### 3. Backend Services
+### Core Components
 
-| Service       | Tech Stack             | Purpose                   |
-| ------------- | ---------------------- | ------------------------- |
-| API Server    | Next.js API Routes     | Bridge frontend ↔ Solana |
-| IPFS Uploader | NFT.Storage SDK        | Store apology metadata    |
-| Twitter Bot   | Twitter API v2 + OAuth | Auto-post NFTs            |
+1. **Anchor Program**
 
-## Smart Contract Functions
+   - Stake management system
+   - NFT minting integration
+   - Probation period tracking
+   - Resolution mechanics
 
-### 1. `initialize_apology`
+2. **Next.js Frontend**
 
-#### Parameters:
+   - Wallet integration
+   - NFT display and management
+   - Stake tracking interface
+   - Resolution dashboard
 
-- `offender: Pubkey` (signer)
-- `victim: Pubkey`
-- `probation_days: u64`
-- `stake_amount: u64` (lamports)
-- `nft_mint: Option<Pubkey>` (if NFT stake)
+3. **NFT System**
+   - Automated minting process
+   - Dynamic metadata updates
+   - IPFS content management
+   - Status tracking
 
-#### Logic:
+## 🚀 Getting Started
 
-- Create `ApologyAccount` PDA
-- Transfer SOL/NFT to escrow PDA
-- Set probation end = current slot + (probation_days \* slots_per_day)
+### Prerequisites
 
-#### Errors:
+- Node.js 18+
+- Rust
+- Solana Tool Suite
+- Anchor Framework
+- Phantom or similar Solana wallet
 
-- `InsufficientFunds`: Offender balance < stake_amount
-- `InvalidNFTTransfer`: NFT not owned by offender
+### Installation
 
-### 2. `release_stake`
+```bash
+# Clone the repository
+git clone https://github.com/kushwahramkumar2003/ApologyStake.git
 
-#### Parameters:
+# Install dependencies
+cd ApologyStake
+pnpm install
 
-- `victim: Pubkey` (signer)
-- `apology_account: Pubkey`
+# Set up environment variables
+cp .env.example .env.local
 
-#### Checks:
-
-- Current slot > probation_end
-- `apology_account.status == Active`
-
-#### Actions:
-
-- Transfer SOL/NFT from escrow → offender
-- Update status → `Completed`
-
-### 3. `claim_stake`
-
-#### Parameters:
-
-Same as `release_stake`
-
-#### Actions:
-
-- Transfer SOL/NFT → victim
-- Burn Apology NFT (if applicable)
-
-## Frontend Pages & Components
-
-### 1. `/create` Page
-
-#### Step 1: Wallet Connection
-
-- Uses `@solana/wallet-adapter-react`
-
-#### Step 2: Stake Details
-
-- SOL Input (converted to lamports)
-- NFT Selector (fetches user's SPL tokens)
-
-#### Step 3: Preview & Sign
-
-- Shows estimated gas fee
-- Renders apology NFT preview
-
-### 2. `/dashboard` Page
-
-#### Filters:
-
-- `Status`: Active/Completed
-- `Stake Type`: SOL/NFT
-
-#### Columns:
-
-- Date Created
-- Victim Address (truncated)
-- Probation End Date
-- Stake Amount
-- Actions (View/Share)
-
-### 3. `/apology/[id]` Page
-
-#### Dynamic Data:
-
-- Fetches apology state from chain
-- Countdown timer (if probation ongoing)
-
-#### Action Buttons:
-
-- `Release Stake`: Only visible to victim post-probation
-- `Claim Stake`: Same as above
-- `Share on Twitter`: Links to pre-filled tweet
-
-## Backend API Endpoints
-
-### 1. `POST /api/apology/create`
-
-#### Request:
-
-```json
-{
-  "offender": "Fzv5k...",
-  "victim": "Hx8d...",
-  "probationDays": 30,
-  "stakeAmount": 1.5,
-  "nftMint": null
-}
+# Start development server
+pnpm dev
 ```
 
-#### Response:
+### Environment Setup
 
-```json
-{
-  "txId": "5bz1...",
-  "apologyId": "abc-123",
-  "nftUrl": "ipfs://bafy..."
-}
+```env
+RPC_URL=
+NEXTAUTH_SECRET=
+NEXTAUTH_JWT_SECRET=
+AUTH_TOKEN_EXPIRATION_TIME=
+PINATA_API_KEY=
+PINATA_API_SECRET=
+PINATA_JWT=
 ```
 
-### 2. `GET /api/apology/:id`
+## 💻 Usage Examples
 
-#### Response:
+### Creating an Apology with Stake
 
-```json
-{
-  "status": "ACTIVE",
-  "stakeAmount": 1500000000,
-  "probationEnd": "2023-10-05T00:00:00Z",
-  "nftMetadata": {
-    /* IPFS JSON */
-  }
-}
-```
+1. Connect your Solana wallet
+2. Enter victim's wallet address
+3. Set stake amount (minimum 0.1 SOL)
+4. Write your apology message
+5. Set probation period (minimum 7 day)
+6. Confirm transaction to:
+   - Lock stake
+   - Mint Proof of Apology NFT
+   - Start probation period
 
-### 3. `POST /api/twitter/post`
+### Resolving an Apology (Victim)
 
-#### Request:
+1. Connect wallet with victim's address
+2. View active apologies
+3. Wait for probation period to end
+4. Choose to:
+   - Release stake back to offender
+   - Claim stake as consequence
+5. NFT updates to reflect final resolution
 
-```json
-{
-  "apologyId": "abc-123",
-  "accessToken": "tw_123..."
-}
-```
+## 📊 Protocol Statistics
 
-#### Response:
+- Total Apologies Created: [Dynamic Counter]
+- Total SOL Staked: [Dynamic Amount]
+- Average Probation Period: [Dynamic Calculation]
+- Resolution Rate: [Dynamic Percentage]
 
-```json
-{
-  "tweetId": "1678..."
-}
-```
+## 🤝 Contributing
 
-## Data Models
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-### 1. Solana Account Layout (Anchor)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing`)
+5. Open a Pull Request
 
-```rust
-#[account]
-pub struct ApologyAccount {
-    pub offender: Pubkey,      // 32
-    pub victim: Pubkey,        // 32
-    pub probation_end: i64,    // 8
-    pub stake_amount: u64,     // 8
-    pub nft_mint: Option<Pubkey>, // 33 (1 + 32)
-    pub status: ApologyStatus, // 1
-    // Total: 114 bytes
-}
+## 🙏 Acknowledgments
 
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub enum ApologyStatus {
-    Active,
-    Completed,
-}
-```
+This project is proudly supported by:
 
-### 2. Database Schema (Prisma)
+- **SuperteamIN** - For ecosystem support and guidance
+- **Solana Foundation** - For technical resources and grants
+- **CoinDCX** - For India Web3 grants support
 
-```prisma
-model User {
-  id           String    @id @default(uuid())
-  wallet       String    @unique
-  createdAt    DateTime  @default(now())
-  apologies    Apology[]
-  twitterId    String?   @unique
-}
+Special thanks to:
 
-model Apology {
-  id             String        @id @default(uuid())
-  offender       User          @relation(fields: [offenderId], references: [id])
-  offenderId     String
-  victimWallet   String
-  contractAddr   String        @unique
-  stakeAmount    Int          // lamports
-  nftCID         String?      // IPFS CID
-  probationDays  Int
-  status         ApologyStatus @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-}
-```
+- The Solana developer community
+- IPFS for decentralized storage
+- All our early users and supporters
 
-## Sequence Diagrams
+## 📄 License
 
-### Apology Creation
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```mermaid
-sequenceDiagram
-    participant Offender
-    participant Frontend
-    participant Solana Program
-    participant IPFS
+## 🌟 Support
 
-    Offender->>Frontend: Fill apology form
-    Frontend->>Solana Program: Get recent blockhash
-    Solana Program-->>Frontend: blockhash
-    Frontend->>Offender: Sign transaction
-    Offender->>Solana Program: initialize_apology()
-    Solana Program->>IPFS: Store metadata
-    IPFS-->>Solana Program: CID
-    Solana Program-->>Frontend: TX confirmed
-```
+## Like this project? Please give it a star on GitHub and share it!
 
-## Error Handling
-
-### Contract Errors
-
-| Error Code       | Scenario                          |
-| ---------------- | --------------------------------- |
-| NotVictim        | Wrong signer for release/claim    |
-| ProbationOngoing | Victim acts before probation ends |
-| InvalidStake     | NFT not transferred properly      |
-
-### API Errors
-
-```json
-{
-  "error": "INSUFFICIENT_FUNDS",
-  "message": "Add 0.05 SOL to your wallet",
-  "required": 50000000,
-  "available": 30000000
-}
-```
+<p align="center">
+Built with ❤️ by Ramkumar kushwah
+</p>
