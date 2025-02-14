@@ -102,6 +102,7 @@ pub mod apologystake {
         apology.victim = ctx.accounts.victim.key();
         apology.stake_amount = stake_amount;
         apology.probation_end = clock.unix_timestamp + (probation_days * 24 * 60 * 60) as i64;
+        // apology.probation_end = clock.unix_timestamp + (probation_days * 60) as i64;
         apology.created_at = clock.unix_timestamp;
         apology.status = ApologyStatus::Active;
         apology.message = message;
@@ -317,7 +318,7 @@ pub struct ReleaseStake<'info> {
     /// The apology account containing stake details
     #[account(
         mut,
-        seeds = [b"apology", apology.offender.as_ref(), apology.victim.as_ref()],
+        seeds = [b"apology", apology.offender.as_ref(), apology.victim.as_ref(),&apology.nonce.to_le_bytes()],
         bump,
         constraint = apology.status == ApologyStatus::Active,
         constraint = Clock::get()?.unix_timestamp >= apology.probation_end,
@@ -351,7 +352,7 @@ pub struct ClaimStake<'info> {
     /// The apology account containing stake details
     #[account(
         mut,
-        seeds = [b"apology", apology.offender.as_ref(), apology.victim.as_ref()],
+        seeds = [b"apology", apology.offender.as_ref(), apology.victim.as_ref(), &apology.nonce.to_le_bytes()],
         bump,
         constraint = apology.status == ApologyStatus::Active,
         constraint = Clock::get()?.unix_timestamp >= apology.probation_end,

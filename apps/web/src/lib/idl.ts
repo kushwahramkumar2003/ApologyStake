@@ -48,6 +48,11 @@ export const IDL = {
                 path: "apology.victim",
                 account: "Apology",
               },
+              {
+                kind: "account",
+                path: "apology.nonce",
+                account: "Apology",
+              },
             ],
           },
         },
@@ -235,6 +240,11 @@ export const IDL = {
               {
                 kind: "account",
                 path: "apology.victim",
+                account: "Apology",
+              },
+              {
+                kind: "account",
+                path: "apology.nonce",
                 account: "Apology",
               },
             ],

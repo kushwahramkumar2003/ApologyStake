@@ -96,6 +96,9 @@ export default function DashboardPage() {
           },
         }))
       );
+
+      console.log("Received apologies:", received);
+      console.log("Sent apologies:", sent);
       setReceivedApologies(
         (received || []).map((item) => ({
           publicKey: item.publicKey,
@@ -197,10 +200,9 @@ export default function DashboardPage() {
             <CardDescription>
               Please connect your wallet to view your apologies.
             </CardDescription>
-            
           </CardHeader>
           <CardContent>
-            <WalletConnect/>
+            <WalletConnect />
           </CardContent>
         </Card>
       </div>

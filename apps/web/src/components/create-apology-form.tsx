@@ -16,7 +16,6 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 
-
 export function CreateApologyForm() {
   const [loading, setLoading] = useState(false);
   const [stakeAmount, setStakeAmount] = useState(1);
@@ -99,8 +98,8 @@ export function CreateApologyForm() {
               <Slider
                 value={[probationDays]}
                 onValueChange={(value) => setProbationDays(value[0])}
-                min={7}
-                max={90}
+                min={1}
+                max={60}
                 step={1}
                 className="flex-1"
               />

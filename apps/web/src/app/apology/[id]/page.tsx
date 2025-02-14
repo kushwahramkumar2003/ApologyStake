@@ -253,22 +253,23 @@ export default function ApologyPage() {
   //   </Card>
   // )}
 
-  if(!connected){
-    return   ( <Card>
-    <CardContent className="flex items-center justify-between p-6">
-      <div className="flex items-center gap-4">
-        <AlertCircle className="h-6 w-6 text-muted-foreground" />
-        <div>
-          <h3 className="font-medium">Connect Wallet</h3>
-          <p className="text-sm text-muted-foreground">
-            Connect your wallet to interact with this apology
-          </p>
-        </div>
-      </div>
-      <Button>Connect Wallet</Button>
-    </CardContent>
-  </Card>
-   )
+  if (!connected) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-between p-6">
+          <div className="flex items-center gap-4">
+            <AlertCircle className="h-6 w-6 text-muted-foreground" />
+            <div>
+              <h3 className="font-medium">Connect Wallet</h3>
+              <p className="text-sm text-muted-foreground">
+                Connect your wallet to interact with this apology
+              </p>
+            </div>
+          </div>
+          <Button>Connect Wallet</Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (!apology) {

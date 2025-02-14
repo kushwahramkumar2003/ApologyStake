@@ -132,6 +132,7 @@ export class ApologyStakeProgram {
   async findVaultPDA(apology: PublicKey): Promise<[PublicKey, number]> {
     return PublicKey.findProgramAddressSync(
       [Buffer.from("vault"), apology.toBuffer()],
+
       this.program.programId
     );
   }
@@ -280,7 +281,9 @@ export class ApologyStakeProgram {
 
     try {
       const apology = await this.validateApologyAccount(apologyPDA);
+      this.logger("Apology account", apology);
       const currentVictim = this.program.provider.publicKey;
+      this.logger("Current victim", currentVictim?.toBase58());
 
       if (!currentVictim || !currentVictim.equals(apology.victim)) {
         throw new ApologyError(
@@ -290,6 +293,7 @@ export class ApologyStakeProgram {
       }
 
       const [vaultPDA] = await this.findVaultPDA(apologyPDA);
+      this.logger("Vault PDA", vaultPDA.toBase58());
 
       const tx = await this.program.methods
         .releaseStake()
@@ -326,7 +330,9 @@ export class ApologyStakeProgram {
 
     try {
       const apology = await this.validateApologyAccount(apologyPDA);
+      this.logger("Apology account", apology);
       const currentVictim = this.program.provider.publicKey;
+      this.logger("Current victim", currentVictim?.toBase58());
 
       if (!currentVictim || !currentVictim.equals(apology.victim)) {
         throw new ApologyError(
@@ -336,6 +342,7 @@ export class ApologyStakeProgram {
       }
 
       const [vaultPDA] = await this.findVaultPDA(apologyPDA);
+      this.logger("Vault PDA", vaultPDA.toBase58());
 
       const tx = await this.program.methods
         .claimStake()

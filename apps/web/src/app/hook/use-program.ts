@@ -25,7 +25,7 @@ export function useProgram() {
       }
     ); //provider
 
-    return new ApologyStakeProgram(provider); //instance
+    return new ApologyStakeProgram(provider,true); //instance
   }, [connection, wallet]);
 
   return { program };

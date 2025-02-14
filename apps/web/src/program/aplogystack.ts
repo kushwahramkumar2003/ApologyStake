@@ -54,6 +54,11 @@ export type Apologystake = {
                 path: "apology.victim";
                 account: "apology";
               },
+              {
+                kind: "account";
+                path: "apology.nonce";
+                account: "apology";
+              },
             ];
           };
         },
@@ -241,6 +246,11 @@ export type Apologystake = {
               {
                 kind: "account";
                 path: "apology.victim";
+                account: "apology";
+              },
+              {
+                kind: "account";
+                path: "apology.nonce";
                 account: "apology";
               },
             ];
