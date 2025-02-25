@@ -13,3 +13,12 @@ export function truncateAddress(address: string) {
 export function formatSOL(amount: number) {
   return `${amount.toFixed(2)} SOL`;
 }
+
+/**
+ * Helper function to generate a complete Metaplex metadata URI
+ * @param cid IPFS Content Identifier
+ * @returns Complete URI to the metadata
+ */
+export function getMetaplexURI(cid: string): string {
+  return `https://ipfs.io/ipfs/${cid}`;
+}

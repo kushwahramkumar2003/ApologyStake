@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/apologystake.json`.
  */
 export type Apologystake = {
-  address: "BEzAB38XypEyvKauzYz6CUKhigu3jgoFSzyLSW5ykUFJ";
+  address: "6W2YxRyMJoDEWWRsTmh8KdkAuz4AahY2WLMXh3ZEigBf";
   metadata: {
     name: "apologystake";
     version: "0.1.0";
@@ -15,23 +15,7 @@ export type Apologystake = {
   instructions: [
     {
       name: "claimStake";
-      docs: [
-        "Allows victim to claim the staked SOL",
-        "",
-        "Can only be called by the victim after probation period ends.",
-        "Represents enforcement of consequences for the offense.",
-        "",
-        "# Arguments",
-        "* `ctx` - Context containing all required accounts",
-        "",
-        "# Returns",
-        "* `Result<()>` - Success or error result",
-        "",
-        "# Errors",
-        "- `InvalidStatus` if apology not active",
-        "- `ProbationNotEnded` if called too early",
-        "- `UnauthorizedVictim` if caller not victim",
-      ];
+      docs: ["Allows victim to claim the staked SOL."];
       discriminator: [62, 145, 133, 242, 244, 59, 53, 139];
       accounts: [
         {
@@ -96,23 +80,7 @@ export type Apologystake = {
     {
       name: "initializeApology";
       docs: [
-        "Creates a new apology with an optional SOL stake",
-        "",
-        "# Arguments",
-        "* `ctx` - Context containing all required accounts",
-        "* `probation_days` - Duration of probation period in days",
-        "* `stake_amount` - Amount of SOL to stake (in lamports)",
-        "* `message` - The apology message text",
-        "* `nonce` - Unique identifier for this apology",
-        "* `twitter` - Victim's Twitter handle for public reference",
-        "",
-        "# Returns",
-        "* `Result<()>` - Success or error result",
-        "",
-        "# Errors",
-        "- `InvalidProbationDays` if probation days is zero",
-        "- `EmptyMessage` if message is empty",
-        "- `InvalidVictim` if offender and victim are same",
+        "Creates a new apology with an optional SOL stake and mints an NFT as proof.",
       ];
       discriminator: [103, 23, 194, 31, 215, 134, 15, 230];
       accounts: [
@@ -174,6 +142,176 @@ export type Apologystake = {
           };
         },
         {
+          name: "nftMint";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [97, 112, 111, 108, 111, 103, 121, 95, 110, 102, 116];
+              },
+              {
+                kind: "account";
+                path: "apology";
+              },
+            ];
+          };
+        },
+        {
+          name: "nftTokenAccount";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "victim";
+              },
+              {
+                kind: "const";
+                value: [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169,
+                ];
+              },
+              {
+                kind: "account";
+                path: "nftMint";
+              },
+            ];
+            program: {
+              kind: "const";
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89,
+              ];
+            };
+          };
+        },
+        {
+          name: "associatedTokenProgram";
+          address: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL";
+        },
+        {
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "metadataProgram";
+          address: "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
+        },
+        {
+          name: "masterEditionAccount";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [109, 101, 116, 97, 100, 97, 116, 97];
+              },
+              {
+                kind: "account";
+                path: "metadataProgram";
+              },
+              {
+                kind: "account";
+                path: "nftMint";
+              },
+              {
+                kind: "const";
+                value: [101, 100, 105, 116, 105, 111, 110];
+              },
+            ];
+            program: {
+              kind: "account";
+              path: "metadataProgram";
+            };
+          };
+        },
+        {
+          name: "nftMetadata";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [109, 101, 116, 97, 100, 97, 116, 97];
+              },
+              {
+                kind: "account";
+                path: "metadataProgram";
+              },
+              {
+                kind: "account";
+                path: "nftMint";
+              },
+            ];
+            program: {
+              kind: "account";
+              path: "metadataProgram";
+            };
+          };
+        },
+        {
           name: "systemProgram";
           docs: ["Required for system operations"];
           address: "11111111111111111111111111111111";
@@ -205,27 +343,15 @@ export type Apologystake = {
           name: "twitter";
           type: "string";
         },
+        {
+          name: "nftUri";
+          type: "string";
+        },
       ];
     },
     {
       name: "releaseStake";
-      docs: [
-        "Releases staked SOL back to the offender",
-        "",
-        "Can only be called by the victim after probation period ends.",
-        "Represents forgiveness/acceptance of the apology.",
-        "",
-        "# Arguments",
-        "* `ctx` - Context containing all required accounts",
-        "",
-        "# Returns",
-        "* `Result<()>` - Success or error result",
-        "",
-        "# Errors",
-        "- `InvalidStatus` if apology not active",
-        "- `ProbationNotEnded` if called too early",
-        "- `UnauthorizedVictim` if caller not victim",
-      ];
+      docs: ["Releases staked SOL back to the offender."];
       discriminator: [51, 5, 28, 250, 185, 168, 18, 53];
       accounts: [
         {
@@ -354,7 +480,7 @@ export type Apologystake = {
   types: [
     {
       name: "apology";
-      docs: ["Main account structure storing apology data"];
+      docs: ["Main account structure storing apology data."];
       type: {
         kind: "struct";
         fields: [
@@ -412,18 +538,18 @@ export type Apologystake = {
     },
     {
       name: "apologyCompleted";
-      docs: ["Event emitted when apology is completed"];
+      docs: ["Event emitted when apology is completed."];
       type: {
         kind: "struct";
         fields: [
           {
             name: "apologyId";
-            docs: ["Public key of the apology account"];
+            docs: ["Public key of the apology account."];
             type: "pubkey";
           },
           {
             name: "resolution";
-            docs: ["How the apology was resolved"];
+            docs: ["How the apology was resolved."];
             type: {
               defined: {
                 name: "apologyResolution";
@@ -435,38 +561,38 @@ export type Apologystake = {
     },
     {
       name: "apologyCreated";
-      docs: ["Event emitted when new apology is created"];
+      docs: ["Event emitted when new apology is created."];
       type: {
         kind: "struct";
         fields: [
           {
             name: "apologyId";
-            docs: ["Public key of the apology account"];
+            docs: ["Public key of the apology account."];
             type: "pubkey";
           },
           {
             name: "offender";
-            docs: ["Public key of the apologizing party"];
+            docs: ["Public key of the apologizing party."];
             type: "pubkey";
           },
           {
             name: "victim";
-            docs: ["Public key of the party receiving apology"];
+            docs: ["Public key of the party receiving apology."];
             type: "pubkey";
           },
           {
             name: "stakeAmount";
-            docs: ["Amount of SOL staked in lamports"];
+            docs: ["Amount of SOL staked in lamports."];
             type: "u64";
           },
           {
             name: "probationDays";
-            docs: ["Length of probation in days"];
+            docs: ["Length of probation in days."];
             type: "u64";
           },
           {
             name: "twitter";
-            docs: ["Victim's Twitter handle"];
+            docs: ["Victim's Twitter handle."];
             type: "string";
           },
         ];
@@ -474,7 +600,7 @@ export type Apologystake = {
     },
     {
       name: "apologyResolution";
-      docs: ["How an apology was resolved"];
+      docs: ["How an apology was resolved."];
       type: {
         kind: "enum";
         variants: [
@@ -489,7 +615,7 @@ export type Apologystake = {
     },
     {
       name: "apologyStatus";
-      docs: ["Status of an apology"];
+      docs: ["Status of an apology."];
       type: {
         kind: "enum";
         variants: [

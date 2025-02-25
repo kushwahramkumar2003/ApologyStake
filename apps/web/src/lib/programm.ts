@@ -6,11 +6,21 @@ import {
   SYSVAR_RENT_PUBKEY,
   Connection,
 } from "@solana/web3.js";
+import {
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token";
 import { IDL } from "./idl";
 import { Apologystake } from "@/program/aplogystack";
+import { uploadJSON } from "@/actions/ipfs";
 
 export const PROGRAM_ID = new PublicKey(
-  "BEzAB38XypEyvKauzYz6CUKhigu3jgoFSzyLSW5ykUFJ"
+  "6W2YxRyMJoDEWWRsTmh8KdkAuz4AahY2WLMXh3ZEigBf"
+);
+
+const METADATA_PROGRAM_ID = new PublicKey(
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
 export const MAX_MESSAGE_LENGTH = 200;
 export const MIN_PROBATION_DAYS = 1;
@@ -138,6 +148,58 @@ export class ApologyStakeProgram {
   }
 
   /**
+   * Find PDA for NFT accounts
+   */
+  async createApologyPDAs(
+    offender: PublicKey,
+    victim: PublicKey,
+    nonce: number
+  ) {
+    // Find an available nonce if the provided one is taken
+
+    const [apologyPDA] = await this.findApologyPDA(offender, victim, nonce);
+
+    const [vaultPDA] = await this.findVaultPDA(apologyPDA);
+
+    // Find NFT mint PDA
+    const [nftMint, nftMintBump] = await PublicKey.findProgramAddress(
+      [Buffer.from("apology_nft"), apologyPDA.toBuffer()],
+      this.program.programId
+    );
+
+    console.log("nft mint bump:", nftMintBump);
+
+    // Find metadata PDA
+    const [nftMetadata] = await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        METADATA_PROGRAM_ID.toBuffer(),
+        nftMint.toBuffer(),
+      ],
+      METADATA_PROGRAM_ID
+    );
+
+    // Find master edition PDA
+    const [masterEdition] = await PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        METADATA_PROGRAM_ID.toBuffer(),
+        nftMint.toBuffer(),
+        Buffer.from("edition"),
+      ],
+      METADATA_PROGRAM_ID
+    );
+
+    return {
+      apologyPDA,
+      vaultPDA,
+      nftMint,
+      nftMetadata,
+      masterEdition,
+    };
+  }
+
+  /**
    * Validate apology parameters
    */
   private validateApologyParams({
@@ -203,12 +265,17 @@ export class ApologyStakeProgram {
 
       const nonce = await this.generateUniqueNonce(offender, params.victim);
 
-      const [apologyPDA] = await this.findApologyPDA(
-        offender,
-        params.victim,
-        nonce
+      const { apologyPDA, vaultPDA, nftMint, nftMetadata, masterEdition } =
+        await this.createApologyPDAs(offender, params.victim, nonce);
+
+      // Get associated token account for NFT
+      const nftTokenAccount = await getAssociatedTokenAddress(
+        nftMint,
+        params.victim
       );
-      const [vaultPDA] = await this.findVaultPDA(apologyPDA);
+
+      console.log("Associated token account:", nftTokenAccount.toString());
+      console.log("program ID:", this.program.programId.toString());
 
       const balance = await this.connection.getBalance(offender);
       if (balance < params.stakeAmount) {
@@ -218,13 +285,38 @@ export class ApologyStakeProgram {
         );
       }
 
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
+      const nftJsonData: Record<string, any> = {
+        name: "Apology NFT",
+        description: "An apology NFT",
+        image: `https://gateway.pinata.cloud/ipfs/bafkreibcdwhk36h42qgd36zaccn2ubgw2jg3h64xijlvllu6z6a4voyj3q`,
+        animation_url:
+          "https://gateway.pinata.cloud/ipfs/bafybeihkv5piwhubutbn33a3svf3cdvrnvw3wt7f7mhtusymxmtr77oyqy",
+        external_url: `https://apology-stake.vercel.app/apology/${apologyPDA}`,
+        attributes: [
+          {
+            trait_type: "Offender",
+            value: offender.toBase58(),
+          },
+          {
+            trait_type: "Victim",
+            value: params.victim.toBase58(),
+          },
+        ],
+      };
+
+      const cid = await uploadJSON(nftJsonData);
+
+      const nftUri = `https://gateway.pinata.cloud/ipfs/${cid}`;
+
       const tx = await this.program.methods
         .initializeApology(
           new anchor.BN(params.probationDays),
           new anchor.BN(params.stakeAmount),
           params.message,
           new anchor.BN(nonce),
-          params.victimTwitter
+          params.victimTwitter,
+          nftUri
         )
         .accounts({
           // @ts-expect-error - Error expected
@@ -232,6 +324,13 @@ export class ApologyStakeProgram {
           offender,
           victim: params.victim,
           vault: vaultPDA,
+          nftMint: nftMint,
+          nftTokenAccount: nftTokenAccount,
+          nftMetadata: nftMetadata,
+          masterEditionAccount: masterEdition,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          metadataProgram: METADATA_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
           rent: SYSVAR_RENT_PUBKEY,
         })
