@@ -26,11 +26,6 @@ export function CreateApologyForm() {
     setLoading(true);
 
     try {
-      // Here we would:
-      // 1. Connect to Solana program
-      // 2. Create the apology transaction
-      // 3. Upload to IPFS
-      // 4. Save to database
       toast({
         title: "Apology Created",
         description:

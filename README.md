@@ -161,12 +161,12 @@ PINATA_JWT=
    - Claim stake as consequence
 5. NFT updates to reflect final resolution
 
-## 📊 Protocol Statistics
+<!-- ## 📊 Protocol Statistics
 
 - Total Apologies Created: [Dynamic Counter]
 - Total SOL Staked: [Dynamic Amount]
 - Average Probation Period: [Dynamic Calculation]
-- Resolution Rate: [Dynamic Percentage]
+- Resolution Rate: [Dynamic Percentage] -->
 
 ## 🤝 Contributing
 

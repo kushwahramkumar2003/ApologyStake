@@ -4,9 +4,9 @@ import { Toaster } from "sonner";
 import { Toaster as Toaster2 } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
-import { Providers } from "@/components/Providers";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { SiteHeader } from "@/components/site-header";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +22,11 @@ export const metadata = {
     "accountability",
   ],
 };
+
+const DynamicProvider = dynamic(
+  () => import("@/components/Providers").then((mod) => mod.Providers),
+  { ssr: false }
+);
 
 export default function RootLayout({
   children,
@@ -47,14 +52,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Providers>
+          <DynamicProvider>
             <main className="flex-1 relative z-10">
               <SiteHeader />
               {children}
             </main>
             <Toaster2 />
             <Toaster richColors position="top-center" className="z-50" />
-          </Providers>
+          </DynamicProvider>
         </ThemeProvider>
       </body>
     </html>

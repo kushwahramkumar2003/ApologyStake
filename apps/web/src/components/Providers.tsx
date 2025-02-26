@@ -5,12 +5,20 @@ import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { SessionProvider } from "next-auth/react";
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
+import dynamic from "next/dynamic";
+
+const WalletModalProviderDynamic = dynamic(
+  () =>
+    import("@solana/wallet-adapter-react-ui").then(
+      (mod) => mod.WalletModalProvider
+    ),
+  { ssr: false }
+);
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const wallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
@@ -18,7 +26,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <ConnectionProvider endpoint={config.rpcEndpoint}>
         <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>{children}</WalletModalProvider>
+          {/* <WalletModalProvider> */}
+          <WalletModalProviderDynamic>{children}</WalletModalProviderDynamic>
+          {/* </WalletModalProvider> */}
         </WalletProvider>
       </ConnectionProvider>
     </SessionProvider>

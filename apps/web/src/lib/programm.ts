@@ -12,7 +12,7 @@ import {
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
 import { IDL } from "./idl";
-import { Apologystake } from "@/program/aplogystack";
+import { Apologystake } from "@/program/aplogystake";
 import { uploadJSON } from "@/actions/ipfs";
 
 export const PROGRAM_ID = new PublicKey(
