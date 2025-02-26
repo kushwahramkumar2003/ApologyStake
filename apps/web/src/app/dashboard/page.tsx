@@ -210,7 +210,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container py-12">
+    <div className="py-12 flex-col justify-center items-center">
       <div className="space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>

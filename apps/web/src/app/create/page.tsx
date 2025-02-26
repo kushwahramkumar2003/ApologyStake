@@ -164,7 +164,7 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="container py-12">
+    <div className="flex flex-col justify-center items-center py-12">
       <Card>
         <form onSubmit={handleSubmit}>
           <CardHeader>

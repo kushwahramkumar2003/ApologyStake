@@ -227,7 +227,7 @@ export default function ApologyPage() {
 
   if (loading) {
     return (
-      <div className="container py-12">
+      <div className="py-12 flex flex-col justify-center items-center">
         <div className="space-y-8">
           <Skeleton className="h-8 w-[200px]" />
           <Skeleton className="h-[400px] w-full" />

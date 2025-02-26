@@ -99,8 +99,8 @@ export default function Home() {
     transition: { duration: 0.5 },
   };
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="flex-1">
+    <div className="flex min-h-screen flex-col justify-center items-center">
+      <main className="flex flex-col justify-center">
         {/* Hero Section */}
         <section className="relative min-h-[80vh] overflow-hidden flex items-center">
           <Meteors className="absolute inset-0 opacity-40 " />
