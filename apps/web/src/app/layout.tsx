@@ -6,11 +6,16 @@ import { cn } from "@/lib/utils";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { SiteHeader } from "@/components/site-header";
 import dynamic from "next/dynamic";
-import Head from "next/head";
+import { Metadata } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
+const DynamicProvider = dynamic(
+  () => import("@/components/Providers").then((mod) => mod.Providers),
+  { ssr: false }
+);
+
+export const metadata: Metadata = {
   title: "ApologyStake - Tokenized Apology Protocol",
   description:
     "Make meaningful apologies with real accountability through blockchain technology. ApologyStake leverages Solana smart contracts to tokenize apologies, ensuring transparency and social accountability.",
@@ -25,15 +30,36 @@ export const metadata = {
     "decentralized apologies",
     "Web3",
   ],
-  author: "Ramkumar Kushwah", 
-  url: "https://apology-stake.vercel.app",
-  image: "/preview.jpeg", 
+  authors: [{ name: "Ramkumar Kushwah" }],
+  metadataBase: new URL("https://apology-stake.vercel.app"),
+  openGraph: {
+    title: "ApologyStake - Tokenized Apology Protocol",
+    description:
+      "Make meaningful apologies with real accountability through blockchain technology. ApologyStake leverages Solana smart contracts to tokenize apologies, ensuring transparency and social accountability.",
+    url: "https://apology-stake.vercel.app",
+    siteName: "ApologyStake",
+    images: [
+      {
+        url: "/preview.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "ApologyStake Preview",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ApologyStake - Tokenized Apology Protocol",
+    description:
+      "Make meaningful apologies with real accountability through blockchain technology.",
+    images: ["/preview.jpeg"],
+    creator: "@ramkumar_9301",
+  },
+  alternates: {
+    canonical: "https://apology-stake.vercel.app",
+  },
 };
-
-const DynamicProvider = dynamic(
-  () => import("@/components/Providers").then((mod) => mod.Providers),
-  { ssr: false }
-);
 
 export default function RootLayout({
   children,
@@ -42,22 +68,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content={metadata.description} />
-        <meta name="keywords" content={metadata.keywords.join(", ")} />
-        <meta name="author" content={metadata.author} />
-        <meta property="og:title" content={metadata.title} />
-        <meta property="og:description" content={metadata.description} />
-        <meta property="og:image" content={metadata.image} />
-        <meta property="og:url" content={metadata.url} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={metadata.title} />
-        <meta name="twitter:description" content={metadata.description} />
-        <meta name="twitter:image" content={metadata.image} />
-        <link rel="canonical" href={metadata.url} />
-        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-      </Head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
