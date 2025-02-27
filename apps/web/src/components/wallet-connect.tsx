@@ -129,7 +129,7 @@ export function WalletConnect() {
 
         {connected && (
           <DropdownMenuContent
-            // align="end"
+            align="end"
             className="w-56 bg-background/95 backdrop-blur-lg border border-primary/20 shadow-lg rounded-lg animate-in fade-in-0 zoom-in-95"
           >
             <div className="px-2 pt-2 pb-1">

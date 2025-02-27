@@ -12,9 +12,9 @@ export async function middleware(req: NextRequest) {
     /^\/auth$/, // Auth page
     /^\/apology\/[^/]+$/, // Matches /apology/{id}
     /^\/api\/auth\/.*/, // NextAuth.js auth routes
+    /^\/api\/.*/, // NextAuth.js auth routes
   ];
 
-  // Check if the pathname matches any public route pattern
   const isPublicRoute = publicRoutePatterns.some((pattern) =>
     pattern.test(pathname)
   );

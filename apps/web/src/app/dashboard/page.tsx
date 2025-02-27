@@ -44,7 +44,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import React from "react"; // Added import for React
+import React from "react";
 import { useProgram } from "../hook/use-program";
 import { WalletConnect } from "@/components/wallet-connect";
 
@@ -193,7 +193,7 @@ export default function DashboardPage() {
 
   if (!connected) {
     return (
-      <div className="container py-12">
+      <div className="flex-col justify-center items-center py-12">
         <Card>
           <CardHeader>
             <CardTitle>Connect Wallet</CardTitle>

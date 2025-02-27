@@ -180,7 +180,6 @@ export default function Home() {
         <section className="border-t border-primary/10">
           <div className="  py-16 md:py-24 lg:py-32 px-4">
             <div className="grid gap-8 lg:gap-12 md:grid-cols-2 items-stretch">
-              {/* Problem Card */}
               <motion.div
                 initial="initial"
                 whileInView="animate"
@@ -238,7 +237,6 @@ export default function Home() {
                 </Card>
               </motion.div>
 
-              {/* Solution Card */}
               <motion.div
                 initial="initial"
                 whileInView="animate"
@@ -315,7 +313,6 @@ export default function Home() {
                     hover:from-zinc-800/90 hover:to-zinc-700/70 hover:border-indigo-500/30 hover:shadow-lg
                     hover:shadow-indigo-500/10 transition-all duration-300 group overflow-hidden relative"
                 >
-                  {/* Glow effect on hover */}
                   <div
                     className="absolute -inset-px bg-gradient-to-r from-indigo-500/20 via-indigo-400/10 to-violet-500/20 opacity-0 
                     group-hover:opacity-100 blur-xl rounded-xl transition-all duration-700 group-hover:duration-500"
@@ -330,7 +327,6 @@ export default function Home() {
                         <stat.icon className="h-5 w-5 text-zinc-400 group-hover:text-indigo-400 group-hover:animate-pulse transition-colors duration-300" />
                       </div>
 
-                      {/* Subtle particle effect */}
                       <div
                         className="h-8 w-8 rounded-full bg-indigo-500/5 opacity-0 group-hover:opacity-30 
                         group-hover:animate-ping transition-all duration-1000 absolute top-0 right-0"
@@ -353,7 +349,6 @@ export default function Home() {
                       {stat.label}
                     </CardDescription>
 
-                    {/* Bottom highlight line */}
                     <div
                       className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full 
                         bg-gradient-to-r from-indigo-500/80 to-violet-500/50 
@@ -403,7 +398,6 @@ export default function Home() {
                         hover:from-zinc-800/90 hover:to-zinc-700/70 hover:border-amber-500/30 hover:shadow-lg
                         hover:shadow-amber-500/10 transition-all duration-300 group overflow-hidden relative"
                 >
-                  {/* Glow effect on hover */}
                   <div
                     className="absolute -inset-px bg-gradient-to-r from-amber-500/20 via-amber-400/10 to-orange-500/20 opacity-0 
                         group-hover:opacity-100 blur-xl rounded-xl transition-all duration-700 group-hover:duration-500"
@@ -433,7 +427,6 @@ export default function Home() {
                       {feature.description}
                     </CardDescription>
 
-                    {/* Bottom highlight line */}
                     <div
                       className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full 
                         bg-gradient-to-r from-amber-500/80 to-orange-500/50 
@@ -441,7 +434,6 @@ export default function Home() {
                     />
                   </CardHeader>
 
-                  {/* Subtle animated particle effect on hover */}
                   <div
                     className="absolute -bottom-20 -right-20 w-40 h-40 bg-amber-500/5 rounded-full opacity-0 
                       group-hover:opacity-100 blur-3xl group-hover:animate-slow-pulse transition-all duration-1000"
@@ -457,7 +449,6 @@ export default function Home() {
           id="how-it-works"
           className="border-t border-zinc-800/40 relative overflow-hidden"
         >
-          {/* Background glow effect */}
           {/* <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/0 via-sky-500/5 to-zinc-900/0 pointer-events-none" /> */}
 
           <div className="py-16 md:py-24 lg:py-32 px-4 relative z-10">
@@ -483,7 +474,6 @@ export default function Home() {
             </motion.div>
 
             <div className="grid gap-8 lg:gap-12 sm:grid-cols-2 lg:grid-cols-4 relative">
-              {/* Connecting lines between steps */}
               {/* <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent hidden lg:block" /> */}
 
               {howItWorks.map((step, index) => (
@@ -500,7 +490,6 @@ export default function Home() {
               hover:from-zinc-800/90 hover:to-zinc-700/70 hover:border-sky-500/30 hover:shadow-lg
               hover:shadow-sky-500/10 transition-all duration-300 group overflow-hidden"
                   >
-                    {/* Glow effect on hover */}
                     <div
                       className="absolute -inset-px bg-gradient-to-r from-sky-500/20 via-sky-400/10 to-blue-500/20 opacity-0 
                 group-hover:opacity-100 blur-xl rounded-xl transition-all duration-700 group-hover:duration-500"
@@ -509,7 +498,6 @@ export default function Home() {
                     <CardHeader className="text-center pb-2 relative z-10">
                       <div className="flex justify-center mb-6">
                         <div className="relative">
-                          {/* Animated circle behind icon on hover */}
                           <motion.div
                             className="absolute inset-0 rounded-full bg-sky-500/10 scale-0 opacity-0 
                       group-hover:opacity-100 group-hover:scale-150 transition-all duration-700"
@@ -518,7 +506,6 @@ export default function Home() {
                             viewport={{ once: true }}
                           />
 
-                          {/* Icon container */}
                           <div
                             className="relative p-4 rounded-xl bg-zinc-800/80 border border-zinc-700/50
                       group-hover:bg-sky-500/20 group-hover:border-sky-500/50 transition-all duration-300 ease-out
@@ -526,7 +513,6 @@ export default function Home() {
                           >
                             <step.icon className="h-8 w-8 text-zinc-400 group-hover:text-sky-400 transition-colors duration-300" />
 
-                            {/* Sparkle effect on hover */}
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                               <div
                                 className="w-1 h-1 rounded-full bg-sky-400 animate-sparkle absolute delay-75"
@@ -543,7 +529,6 @@ export default function Home() {
                             </div>
                           </div>
 
-                          {/* Step number */}
                           <div
                             className="absolute -bottom-3 -right-3 w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700/50 
                       flex items-center justify-center text-xs font-semibold text-zinc-400 
@@ -581,7 +566,6 @@ export default function Home() {
                       </p>
                     </CardContent>
 
-                    {/* Bottom liquid animation on hover */}
                     <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden">
                       <div
                         className="w-0 group-hover:w-full h-full bg-gradient-to-r from-sky-500 via-blue-400 to-sky-500 
@@ -592,7 +576,6 @@ export default function Home() {
                       />
                     </div>
 
-                    {/* SVG for wave pattern */}
                     <svg width="0" height="0" className="absolute">
                       <defs>
                         <clipPath id="wave-path">
@@ -601,14 +584,12 @@ export default function Home() {
                       </defs>
                     </svg>
 
-                    {/* Subtle animated particle effect on hover */}
                     <div
                       className="absolute -bottom-20 -right-20 w-40 h-40 bg-sky-500/5 rounded-full opacity-0 
                 group-hover:opacity-100 blur-3xl group-hover:animate-slow-pulse transition-all duration-1000"
                     />
                   </Card>
 
-                  {/* Connection arrows between cards (visible on larger screens) */}
                   {index < howItWorks.length - 1 && (
                     <div className="hidden lg:block absolute -right-6 top-1/3 z-10">
                       <div className="relative flex items-center justify-center">
@@ -621,7 +602,6 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Bottom Pattern */}
             <div className="mt-16 flex justify-center">
               <motion.div
                 initial={{ opacity: 0, width: 0 }}
@@ -632,7 +612,6 @@ export default function Home() {
               />
             </div>
 
-            {/* Call to action button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -654,11 +633,9 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Edge glow effect */}
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/20 to-transparent" />
         </section>
 
-        {/* Use Cases Section */}
         <section
           id="use-cases"
           className="py-16 md:py-24 lg:py-32 px-4 border-t border-zinc-800/40"
@@ -682,8 +659,6 @@ export default function Home() {
             <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
               Real-world applications of ApologyStake
             </p>
-
-            {/* Decorative element */}
           </motion.div>
 
           <div className="grid gap-8 md:gap-10 md:grid-cols-2 lg:grid-cols-3">
@@ -722,7 +697,6 @@ export default function Home() {
             hover:from-zinc-800/90 hover:to-zinc-700/70 hover:border-${useCase.color}-500/30 hover:shadow-lg
             hover:shadow-${useCase.color}-500/10 transition-all duration-300 group overflow-hidden relative`}
                 >
-                  {/* Glow effect on hover */}
                   <div
                     className={`absolute -inset-px bg-gradient-to-r from-${useCase.color}-500/20 via-${useCase.color}-400/10 to-${useCase.color}-600/20 opacity-0 
               group-hover:opacity-100 blur-xl rounded-xl transition-all duration-700 group-hover:duration-500`}
@@ -735,7 +709,6 @@ export default function Home() {
                   group-hover:bg-${useCase.color}-500/10 group-hover:border-${useCase.color}-500/50 transition-all duration-300 ease-out
                   relative overflow-hidden`}
                       >
-                        {/* Icon background pulse effect */}
                         <div
                           className={`absolute inset-0 bg-${useCase.color}-500/5 scale-0 group-hover:scale-150 opacity-0 
                     group-hover:opacity-100 transition-all duration-700 rounded-full`}
@@ -763,7 +736,6 @@ export default function Home() {
                       </CardDescription>
                     </div>
 
-                    {/* Sparkle effect on hover */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div
                         className={`w-1 h-1 rounded-full bg-${useCase.color}-400 animate-sparkle absolute delay-75`}
@@ -779,7 +751,6 @@ export default function Home() {
                       />
                     </div>
 
-                    {/* Bottom highlight line */}
                     <div
                       className={`absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full 
                 bg-gradient-to-r from-${useCase.color}-500/80 to-${useCase.color}-600/50 
@@ -787,7 +758,6 @@ export default function Home() {
                     />
                   </CardHeader>
 
-                  {/* Subtle animated particle effect on hover */}
                   <div
                     className={`absolute -bottom-20 -right-20 w-40 h-40 bg-${useCase.color}-500/5 rounded-full opacity-0 
               group-hover:opacity-100 blur-3xl group-hover:animate-slow-pulse transition-all duration-1000`}
@@ -797,7 +767,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Use case examples */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -849,7 +818,6 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              {/* Glow effects */}
               <div className="absolute -inset-px bg-gradient-to-r from-indigo-500/20 via-violet-500/10 to-purple-500/20 opacity-0 group-hover:opacity-100 blur-xl rounded-xl transition-all duration-700" />
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl animate-slow-pulse" />
               <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl animate-slow-pulse delay-700" />
@@ -900,7 +868,6 @@ export default function Home() {
                   </Button>
                 </div>
 
-                {/* Key benefits */}
                 <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 pt-8 mt-4 border-t border-zinc-800/60">
                   {[
                     { icon: Star, label: "Build Genuine Trust" },

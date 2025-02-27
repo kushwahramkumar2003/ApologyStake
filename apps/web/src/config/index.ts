@@ -10,7 +10,6 @@ export const config = {
 
   //   programId: new PublicKey(idl.address),
   nextAuthSecret: process.env.NEXTAUTH_SECRET || "next-auth-secret",
-  nextAuthJwtSecret: process.env.NEXTAUTH_JWT_SECRET || "next-auth",
   authTokenExpirationTime:
     process.env.AUTH_TOKEN_EXPIRATION_TIME || 60 * 60 * 24 * 1,
   pinataApiKey: process.env.PINATA_API_KEY || "pinata-api-key",

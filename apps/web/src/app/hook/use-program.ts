@@ -23,9 +23,9 @@ export function useProgram() {
       {
         commitment: "confirmed",
       }
-    ); //provider
+    );
 
-    return new ApologyStakeProgram(provider,true); //instance
+    return new ApologyStakeProgram(provider,true); 
   }, [connection, wallet]);
 
   return { program };

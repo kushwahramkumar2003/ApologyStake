@@ -26,9 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <ConnectionProvider endpoint={config.rpcEndpoint}>
         <WalletProvider wallets={wallets} autoConnect>
-          {/* <WalletModalProvider> */}
           <WalletModalProviderDynamic>{children}</WalletModalProviderDynamic>
-          {/* </WalletModalProvider> */}
         </WalletProvider>
       </ConnectionProvider>
     </SessionProvider>

@@ -37,7 +37,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useProgram } from "../hook/use-program";
 import { WalletConnect } from "@/components/wallet-connect";
 
-// Constants from program
 const MIN_PROBATION_DAYS = 1;
 const MAX_PROBATION_DAYS = 60;
 const MAX_MESSAGE_LENGTH = 200;

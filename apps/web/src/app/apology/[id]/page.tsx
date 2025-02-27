@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -54,6 +53,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useProgram } from "@/app/hook/use-program";
+import ApologyPageSkeleton from "@/components/reusable/ApologyPageSkeleton";
 
 interface Apology {
   publicKey: PublicKey;
@@ -106,7 +106,6 @@ export default function ApologyPage() {
         account: apologyAccount,
       });
 
-      // Load related apologies (between same parties)
       const related = await program.getApologiesByOffender(
         apologyAccount.offender
       );
@@ -124,7 +123,7 @@ export default function ApologyPage() {
 
   useEffect(() => {
     loadApology();
-  }, [apologyId, loadApology]); // Removed unnecessary dependency: program
+  }, [apologyId, loadApology]);
 
   const handleRelease = async () => {
     if (!apology || !program) return;
@@ -226,32 +225,8 @@ export default function ApologyPage() {
   }, [apology, publicKey]);
 
   if (loading) {
-    return (
-      <div className="py-12 flex flex-col justify-center items-center">
-        <div className="space-y-8">
-          <Skeleton className="h-8 w-[200px]" />
-          <Skeleton className="h-[400px] w-full" />
-        </div>
-      </div>
-    );
+    return <ApologyPageSkeleton />;
   }
-
-  // {!connected && (
-  //   <Card>
-  //     <CardContent className="flex items-center justify-between p-6">
-  //       <div className="flex items-center gap-4">
-  //         <AlertCircle className="h-6 w-6 text-muted-foreground" />
-  //         <div>
-  //           <h3 className="font-medium">Connect Wallet</h3>
-  //           <p className="text-sm text-muted-foreground">
-  //             Connect your wallet to interact with this apology
-  //           </p>
-  //         </div>
-  //       </div>
-  //       <Button>Connect Wallet</Button>
-  //     </CardContent>
-  //   </Card>
-  // )}
 
   if (!connected) {
     return (

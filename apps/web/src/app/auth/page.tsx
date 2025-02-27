@@ -53,23 +53,19 @@ export default function AuthPage() {
   }, []);
 
   const handleAuth = useCallback(async () => {
-    // Reset states at the start
     setError(null);
     setIsLoading(true);
     setAuthStage("initial");
 
     try {
-      // Check wallet connection
       if (!connected) {
         throw new Error("Please connect your wallet first");
       }
 
-      // Check wallet capabilities
       if (!publicKey || !signMessage) {
         throw new Error("Wallet doesn't support message signing");
       }
 
-      // Generate and sign message
       setAuthStage("signing");
       const nonce = generateNonce();
       const message = new TextEncoder().encode(
@@ -80,31 +76,24 @@ export default function AuthPage() {
       try {
         signature = await signMessage(message);
       } catch {
-        // Handle user rejection or signing failure
         throw new Error("Message signing was cancelled or failed");
       }
 
-      // Convert signature to base58
       const signatureBase58 = bs.encode(signature);
 
-      // Verify signature
       setAuthStage("verifying");
       const response = await signIn("signin", {
         publicKey: publicKey.toBase58(),
         signature: signatureBase58,
         nonce,
-        redirect: false,
+        redirect: true,
       });
 
       if (response?.error) {
         throw new Error(response.error);
       }
-
-      // Handle success
       setAuthStage("success");
       toast.success("Successfully authenticated");
-
-      // Navigate to dashboard
       try {
         setTimeout(() => router.push("/dashboard"), 1000);
       } catch (routeError) {
@@ -112,7 +101,6 @@ export default function AuthPage() {
         toast.error("Navigation failed, please try again");
       }
     } catch (error) {
-      // Handle all errors
       console.error("Authentication error:", error);
       setAuthStage("error");
       setError(
@@ -122,7 +110,6 @@ export default function AuthPage() {
         error instanceof Error ? error.message : "Authentication failed"
       );
 
-      // Disconnect wallet on critical errors
       if (
         error instanceof Error &&
         (error.message.includes("support") ||
@@ -135,7 +122,6 @@ export default function AuthPage() {
     }
   }, [publicKey, signMessage, connected, generateNonce, router, disconnect]);
 
-  // Reset state when wallet disconnects
   useEffect(() => {
     if (!connected) {
       setAuthStage("initial");

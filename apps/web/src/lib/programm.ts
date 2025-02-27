@@ -248,7 +248,7 @@ export class ApologyStakeProgram {
     this.logger("Creating apology", params);
 
     try {
-      // Validate parameters
+    
       this.validateApologyParams(params);
 
       const offender = this.program.provider.publicKey;

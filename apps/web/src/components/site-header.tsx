@@ -118,7 +118,6 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
               {!isPrivateRoute && !connected && (
@@ -188,7 +187,7 @@ export function SiteHeader() {
 
           <WalletConnect />
 
-          {/* Mobile Navigation */}
+      
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button

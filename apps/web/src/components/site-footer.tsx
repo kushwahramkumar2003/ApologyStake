@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Github, Twitter, DiscIcon as Discord } from "lucide-react";
+import Image from "next/image";
+import { FaDiscord, FaGithub, FaXTwitter } from "react-icons/fa6";
 
 export function SiteFooter() {
   return (
@@ -13,25 +14,29 @@ export function SiteFooter() {
             <p className="text-sm text-muted-foreground">
               Making apologies meaningful through blockchain accountability.
             </p>
+            <div>
+              <Image
+                src="/solana-powered.svg"
+                width={120}
+                height={30}
+                alt="ApologyStake"
+              />
+            </div>
             <div className="flex gap-4">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="https://twitter.com" target="_blank">
-                  <Twitter className="h-4 w-4" />
-                  <span className="sr-only">Twitter</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="https://github.com" target="_blank">
-                  <Github className="h-4 w-4" />
-                  <span className="sr-only">GitHub</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="https://discord.com" target="_blank">
-                  <Discord className="h-4 w-4" />
-                  <span className="sr-only">Discord</span>
-                </Link>
-              </Button>
+              <Link href="https://twitter.com" target="_blank">
+                <FaXTwitter size={22} />
+                <span className="sr-only">Twitter</span>
+              </Link>
+
+              <Link href="https://github.com" target="_blank">
+                <FaGithub size={22} />
+                <span className="sr-only">GitHub</span>
+              </Link>
+
+              <Link href="https://discord.com" target="_blank">
+                <FaDiscord size={22} />
+                <span className="sr-only">Discord</span>
+              </Link>
             </div>
           </div>
           <div>
