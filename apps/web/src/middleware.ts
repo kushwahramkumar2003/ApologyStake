@@ -12,7 +12,8 @@ export async function middleware(req: NextRequest) {
     /^\/auth$/, // Auth page
     /^\/apology\/[^/]+$/, // Matches /apology/{id}
     /^\/api\/auth\/.*/, // NextAuth.js auth routes
-    /^\/api\/.*/, // NextAuth.js auth routes
+    /^\/api\/.*/, // API routes
+    /^\/public\/.*/, // Public assets directory
   ];
 
   const isPublicRoute = publicRoutePatterns.some((pattern) =>
@@ -32,5 +33,8 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|favicon.ico).*)"],
+  matcher: [
+    // Match all paths except these
+    "/((?!_next|favicon.ico|preview.jpeg|solana-powered.svg|public).*)",
+  ],
 };
