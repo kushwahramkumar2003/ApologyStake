@@ -2,7 +2,6 @@ import "@/app/globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import { Toaster as Toaster2 } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { SiteHeader } from "@/components/site-header";
@@ -46,21 +45,14 @@ export default function RootLayout({
           inter.className
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <DynamicProvider>
-            <main className="flex-1 relative z-10">
-              <SiteHeader />
-              {children}
-            </main>
-            <Toaster2 />
-            <Toaster richColors position="top-center" className="z-50" />
-          </DynamicProvider>
-        </ThemeProvider>
+        <DynamicProvider>
+          <main className="flex-1 relative z-10">
+            <SiteHeader />
+            {children}
+          </main>
+          <Toaster2 />
+          <Toaster richColors position="top-center" className="z-50" />
+        </DynamicProvider>
       </body>
     </html>
   );

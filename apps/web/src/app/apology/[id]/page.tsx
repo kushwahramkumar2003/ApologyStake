@@ -274,7 +274,7 @@ export default function ApologyPage() {
 
   if (!apology) {
     return (
-      <div className="container py-12">
+      <div className="py-12 flex items-center justify-between">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <XCircle className="h-12 w-12 text-muted-foreground" />
@@ -299,7 +299,7 @@ export default function ApologyPage() {
   const probationEnded = now >= apology.account.probationEnd;
 
   return (
-    <div className="container  py-12">
+    <div className="flex flex-col items-center justify-between py-12">
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <Button variant="ghost" asChild>

@@ -12,7 +12,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
@@ -110,7 +109,7 @@ export function SiteHeader() {
       animate={{ y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="container flex h-16 items-center justify-between">
+      <div className="flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center space-x-2 group">
             <Shield className="h-6 w-6 transition-transform group-hover:scale-110" />
@@ -183,7 +182,6 @@ export function SiteHeader() {
         <div className="flex items-center gap-4">
           {width > 480 && (
             <>
-              <ThemeToggle />
               <GitHubStats />
             </>
           )}
@@ -254,7 +252,6 @@ export function SiteHeader() {
                 )}
                 {width <= 480 && (
                   <div className="flex flex-col gap-2 items-center">
-                    <ThemeToggle />
                     <GitHubStats />
                   </div>
                 )}
