@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-export async function GET(): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://apology-stake.vercel.app";
 
   return [
