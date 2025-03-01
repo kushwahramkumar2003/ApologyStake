@@ -86,7 +86,7 @@ export default function AuthPage() {
         publicKey: publicKey.toBase58(),
         signature: signatureBase58,
         nonce,
-        redirect: true,
+        redirect: false,
       });
 
       if (response?.error) {
