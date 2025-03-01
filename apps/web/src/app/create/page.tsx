@@ -325,11 +325,15 @@ export default function CreatePage() {
               </Label>
             </div>
 
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
+            <Alert className="flex flex-row justify-center item-center text-center">
               <AlertDescription>
-                Once created, this apology will be recorded on the Solana
-                blockchain and cannot be modified or deleted.
+                <div className="flex flex-row justify-center items-center gap-3">
+                  <AlertCircle className="h-4 w-4" />
+                  <p>
+                    Once created, this apology will be recorded on the Solana
+                    blockchain and cannot be modified or deleted.
+                  </p>
+                </div>
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -352,6 +356,14 @@ export default function CreatePage() {
                     <h4 className="font-medium">To</h4>
                     <p className="text-sm text-muted-foreground font-mono">
                       {victimWallet}
+                    </p>
+                  </div>
+                  <div>
+                    <p>
+                      Victum&apos;s Twitter Handle :
+                      <span className="text-sm text-muted-foreground font-mono ml-1">
+                        {victimTwitter}
+                      </span>
                     </p>
                   </div>
                   <div>
